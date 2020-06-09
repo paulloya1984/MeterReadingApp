@@ -346,10 +346,11 @@ public class synchronizeFragment extends Fragment {
             String uploadId = UUID.randomUUID().toString();
 
             //Creating a multi part request
+           // dialog = ProgressDialog.show(getActivity(), "Sending Data", "Uploading file...", true);
             new MultipartUploadRequest(getActivity(), uploadId, BASE_URL)
                     .addFileToUpload(path, "file") //Adding file
                    // .addParameter("name", name) //Adding text parameter to the request
-                    .setNotificationConfig(new UploadNotificationConfig())
+                   // .setNotificationConfig(new UploadNotificationConfig())
                     .setMaxRetries(2)
                     .startUpload(); //Starting the upload
 
