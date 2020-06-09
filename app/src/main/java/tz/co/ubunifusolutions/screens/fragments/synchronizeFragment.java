@@ -510,7 +510,7 @@ public class synchronizeFragment extends Fragment {
                     // Getting JSON Array node
                     JSONArray customersJArray = jsonObj.getJSONArray("customers");
                     int le = customersJArray.length();
-                    // Toast.makeText(sync.this, "Urefu wote" + le, Toast.LENGTH_SHORT).show();
+
                     Log.e(TAG, "doInBackground: "+"Urefu wote" + le );
                     progressBar2.setMax(le);
                     // looping through All Customers
