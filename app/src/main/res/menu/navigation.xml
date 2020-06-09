@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/navigation_dashboard"
+        android:icon="@drawable/ic_dashboard_black_24dp"
+        android:title="@string/title_home"
+        android:enabled="true"
+        app:labelVisibilityMode="labeled"
+
+
+        />
+
+    <item
+        android:id="@+id/navigation_waliosomewa"
+        android:icon="@drawable/ic_chrome_reader_mode_black_24dp"
+        android:title="@string/title_dashboard"
+        android:enabled="true"
+        app:labelVisibilityMode="labeled"
+        />
+
+    <item
+        android:id="@+id/navigation_add"
+        android:enabled="true"
+        android:icon="@drawable/add_24px"
+        android:title="@string/title_add"
+        app:labelVisibilityMode="labeled"
+
+        />
+    <item
+        android:id="@+id/navigation_synchronise"
+        android:icon="@drawable/ic_update_black_24dp"
+        android:title="@string/title_notifications"
+        android:enabled="true"
+
+        />
+    <item
+        android:id="@+id/navigation_settings"
+        android:enabled="true"
+        android:icon="@drawable/ic_settings"
+        android:title="@string/title_settings"
+        app:labelVisibilityMode="labeled"
+        />
+
+</menu>

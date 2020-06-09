@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".activities.read_Search">
+
+    <SearchView
+        android:id="@+id/idsearch_read"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center|right"
+        android:iconifiedByDefault="false"
+        android:inputType="number"
+        android:queryHint="Search Meter Number">
+
+        <requestFocus />
+    </SearchView>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="@dimen/cardview_default_radius">
+        <CheckBox
+            android:id="@+id/chkConnNumber"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Conn Number"
+            android:padding="@dimen/cardview_default_radius"/>
+
+        <Space
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <CheckBox
+            android:id="@+id/chkMeterNumber"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Meter Number"
+            android:padding="@dimen/cardview_default_radius"/>
+
+        <Space
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <CheckBox
+            android:id="@+id/chkName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:enabled="false"
+            android:padding="@dimen/cardview_default_radius"
+            android:text="Name" />
+
+    </LinearLayout>
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rvAnimals"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+
+
+</LinearLayout>

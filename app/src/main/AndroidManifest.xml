@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="tz.co.ubunifusolutions.screens">
+
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="true" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.SEND_SMS" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
+    <permission
+        android:name="android.permission.INTERACT_ACROSS_USERS_FULL"
+        android:protectionLevel="signature" />
+
+    <uses-feature android:name="android.hardware.camera.autofocus" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme"
+        android:usesCleartextTraffic="true">
+        <activity android:name=".about.About"></activity>
+        <activity android:name=".activities.New_Reading_Tab" />
+        <activity android:name=".badosemewa" />
+        <activity android:name=".activities.recycler_temp" />
+        <activity android:name=".activities.wateja.customer_Details" />
+        <activity android:name=".activities.route_Details_Modify" />
+        <activity android:name=".activities.route_Details" />
+        <activity
+            android:name=".activities.read_Search"
+            android:launchMode="singleInstance" />
+        <activity android:name=".activities.wateja.bado_somewa" />
+        <activity android:name=".activities.wateja.waliosomewa" />
+        <activity android:name=".customers.wateja_waliosomewa" />
+        <activity android:name=".activities.wateja.List" />
+        <activity android:name=".activities.wateja.Routeee" />
+        <activity android:name=".activities.extras.tatizo" />
+        <activity android:name=".activities.extras.Faults" />
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyCeg-c0YAcN3rlq4r4XK6zFdBj42dBj6eo" />
+
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="tz.co.ubunifusolutions.screens.pictures"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
+        <activity
+            android:name=".activities.MainActivity"
+            android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".activities.Nyumbani"
+            android:label="@string/title_activity_nyumbani"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".activities.LoginActivity" />
+        <activity android:name=".activities.new_account" />
+        <activity
+            android:name=".activities.new_Reading"
+            android:launchMode="singleInstance" />
+        <activity android:name=".activities.sync" />
+        <activity android:name=".activities.Reading_area" />
+        <activity android:name=".map.MapsActivityCurrentPlace" />
+        <activity android:name=".about.about_Bawasa" />
+        <activity android:name=".activities.Activity_Main2" />
+        <activity android:name=".activities.settings" />
+
+        <uses-library
+            android:name="org.apache.http.legacy"
+            android:required="false" />
+
+        <service android:name=".activities.wateja.floating.floatingWindow" />
+    </application>
+
+</manifest>

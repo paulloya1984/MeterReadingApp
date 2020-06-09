@@ -1,0 +1,160 @@
+<resources>
+    <string name="app_name">Bawasa Meter Reading</string>
+    <string name="title_home">Dash</string>
+    <string name="title_dashboard">Reading</string>
+    <string name="current_location">Your Location</string>
+    <string name="title_notifications">Synchronise</string>
+    <string name="title_add">Read</string>
+    <string name="title_settings">More</string>
+    <string name="title_activity_nyumbani">Nyumbani</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">BAWASA Meter Reading</string>
+    <string name="nav_header_subtitle1">UserName</string>
+    <string name="nav_header_subtitle">Version 1.0.1</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+    <string name="sign_in">Sign In</string>
+    <string name="donthave">Dont Have Account? Click Here</string>
+    <string name="password">Password</string>
+    <string name="username2">Username</string>
+    <string name="enter_username">Enter Username</string>
+    <string name="new_account">New Account</string>
+    <string name="ok">Save</string>
+    <string name="Customer_Name">Name</string>
+    <string name="cancel">Cancel</string>
+    <string name="lastname">Last Name</string>
+    <string name="first_name">First Name</string>
+    <string name="new_reading">New Reading</string>
+    <string name="signout">Sign Out</string>
+    <string name="about_application">About Application</string>
+    <string name="about_ubunifu_solutions">About BAWASA</string>
+    <string name="update_local_database">Pakua Data / Update Database</string>
+    <string name="send_your_meter_reading">Tuma Data /Send Reading</string>
+    <string name="title_activity_maps">Current Place Details</string>
+    <string name="default_info_title">Default Location</string>
+    <string name="default_info_snippet">No places found, because location permission is disabled.</string>
+    <string name="option_get_place">Get place</string>
+    <string name="pick_place">Choose a place</string>
+    <string name="please_wait_synchronizing_data">Please Wait, Synchronizing Data</string>
+
+    <string name="area_prompt">Choose Area</string>
+    <string name="about_bawasa_content">
+\n \n  Babati Urban Water Supply and Sanitation Authority (BAWASA) is an autonomous Water Utility organization established under the auspices of the water works ordnance Cap.  281 and Regulation 3 (1) of Water Works Regulation published in the Government Notice No 371 on the 25th July, 1997.
+\nThe Minister responsible for Water declared Babati Urban Water Supply and Sanitation Authority as a full autonomous body with effect from 13th December, 2003 and started its operations on 1st March, 2004.
+\nAlongside with the previous Water Works Ordinance of 1949 which established BAWASA, The water Supply and Sanitation Act 2009 is in force as a new revised version of the Act Supplement. The Babati Urban Water Supply and Sanitation Authority discharge its functions under the Ministry of Water and Irrigation and are closely regulated by the Energy and Water Utility Regulatory Authority (EWURA).
+\n \n Vision
+\nTo be the role model utility in water supply and sanitation services in Tanzania.
+  \n \n  Mission \n
+To provide reliable, viable and affordable high quality water supply services and sanitation in Babati Town.
+
+        \n For More Information Please visit our website \n
+        \n http://www.bawasa.or.tz/index.php/about-us \n 
+    </string>
+    <string name="clear">Clear</string>
+    <string name="report_a_fault">Report a Fault</string>
+    <string name="How_Bad">How Bad is The Fault</string>
+    <string name="public_internet_ip_address">Public (Internet) IP Address</string>
+    <string name="public_ip_address">Public IP Address</string>
+    <string name="local_bawasa_ip_address">Local BAWASA IP Address</string>
+    <string name="local_ip_address">Local IP Address</string>
+    <string name="save">save</string>
+    <string name="route_details">Route Details</string>
+    <string name="modify">modify route</string>
+    <string name="meter_number">Meter Number</string>
+    <string name="area">Area</string>
+    <string name="zone">Zone</string>
+    <string name="sequence">Sequence</string>
+    <string name="phone_number">Phone Number</string>
+
+    <string-array name="babati_areas">
+        <item> Select Area </item>
+        <item> MRARA </item>
+        <item> MAJENGO MAPYA </item>
+        <item> NYUNGUU </item>
+        <item> OYSTERBAY </item>
+        <item> OLD MAJENGO </item>
+        <item> MAISAKA </item>
+        <item> NGARENARO </item>
+        <item> KWERE </item>
+        <item> HANGONI </item>
+        <item> NYAWARI </item>
+        <item> MAISAKA B </item>
+        <item> MAISAKA A </item>
+        <item> MRUKI </item>
+        <item> SINAI </item>
+        <item> SAWE </item>
+        <item> MAISAKA KATI </item>
+        <item> NEGAMSI </item>
+        <item> KOMOTO </item>
+        <item> MIYOMBONI </item>
+        <item> BAGARA ZIWANI </item>
+        <item> NANGARA ZIWANI </item>
+        <item> NANGARA KATI </item>
+        <item> BALOWA </item>
+        <item> GENDI BARAZANI </item>
+        <item> SIGINO </item>
+    </string-array>
+
+    <string-array name="Reading_Codes">
+        <item> Reading Status </item>
+        <item> 1 = Gate Closed</item>
+        <item> 2 = No Water</item>
+        <item> 3 = Vacant Prop./Stopped Building </item>
+        <item> 4 = On Borehole </item>
+        <item> 5 = No Connection </item>
+        <item> 6 = Stuck Meter/Stopped Moving </item>
+        <item> 7 = Working Meter </item>
+        <item> 8 = Disconnected </item>
+        <item> 9 = Illegal Reconnection </item>
+        <item> 10 = Damaged Meter </item>
+        <item> 11 = Reversing (Wrong Last Month) </item>
+        <item> 12 = Other Status </item>
+        <item> 13 = Dirty Meter </item>
+        <item> 14 = Box Locked </item>
+        <item> 15 = Meter Leaking </item>
+        <item> 16 = Meter Stolen </item>
+        <item> 17 = Water Not Consumed </item>
+
+    </string-array>
+    <string-array name="Reading_Codes1">
+        <item> Reading Status </item>
+        <item> 1 </item>
+        <item> 2 </item>
+        <item> 3 </item>
+        <item> 4 </item>
+        <item> 5 </item>
+        <item> 6 </item>
+        <item> 7 </item>
+        <item> 8 </item>
+        <item> 9 </item>
+        <item> 10 </item>
+        <item> 11 </item>
+        <item> 12 </item>
+        <item> 13 </item>
+        <item> 14 </item>
+        <item> 15 </item>
+        <item> 16 </item>
+        <item> 17 </item>
+
+    </string-array>
+    <string-array name="search_category">
+        <item> Meter Number </item>
+        <item> First Name </item>
+        <item> Last Name </item>
+        <item> Connection Number </item>
+
+    </string-array>
+
+    <string-array name="severity">
+        <item>Select One</item>
+        <item> Very Bad - Require Imediate Attention </item>
+        <item> Not Very Bad </item>
+        <item> Just Normal Leakage </item>
+        <item> No Visible Leak </item>
+    </string-array>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+</resources>
