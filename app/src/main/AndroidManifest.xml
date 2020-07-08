@@ -29,7 +29,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".about.About"></activity>
+        <activity android:name=".activities.rehabilitation.rehabilitation"></activity>
+        <activity android:name=".about.About" />
         <activity android:name=".activities.New_Reading_Tab" />
         <activity android:name=".badosemewa" />
         <activity android:name=".activities.recycler_temp" />

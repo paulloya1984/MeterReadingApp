@@ -1022,7 +1022,7 @@ return res_customer;
         Log.e(TAG, "getArea_Namehalisi: from dbhelper "+ key );
         SQLiteDatabase db = this.getWritableDatabase();
         Log.e(TAG, "getArea_Namehalisi: sql "+"Select "+ COLUMN_AREA_CODE+" , "+COLUMN_AREA +" FROM " + TABLE_NAME_AREAS +" WHERE "+ COLUMN_AREA_CODE+" ='"+key+"'" );
-        Cursor res= db.rawQuery("Select "+ COLUMN_AREA_CODE+" , "+COLUMN_AREA +" FROM " + TABLE_NAME_AREAS +" WHERE "+ COLUMN_AREA_CODE+" ='"+key+"'", null);
+        Cursor res= db.rawQuery("Select "+ COLUMN_AREA_CODE+" , "+COLUMN_AREA +" FROM " + TABLE_NAME_AREAS +" WHERE "+ COLUMN_AREA_CODE+" =='"+key+"'", null);
         if (res == null){
             Log.e(TAG, "getArea_Namehalisi: Hamna result" );
         }

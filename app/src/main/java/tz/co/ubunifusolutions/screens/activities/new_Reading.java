@@ -410,7 +410,8 @@ public class new_Reading extends AppCompatActivity implements GoogleApiClient.Co
                 }
             }
             Log.e(TAG, "getAreaDetails: Bill " + bill_area);
-            getAreaNameHalisi(bill_area);
+            txtArea.setText(bill_area);
+         //   getAreaNameHalisi(bill_area);
         } else {
             Log.e(TAG, "getAreaDetails: Bill - Error");
         }
@@ -425,15 +426,33 @@ public class new_Reading extends AppCompatActivity implements GoogleApiClient.Co
         Cursor cursor1 = dataBaseHelper.getArea_Namehalisi(key);
         Log.e(TAG, "getAreaDetails: cursor init --- " + key);
         String Area_name = null;
-        if (cursor1.moveToFirst()) {
-            do {
+        if (cursor1 != null && cursor1.getCount() > 0) {
+            while (cursor1.moveToNext()) {
                 Area_name = cursor1.getString(cursor1.getColumnIndex("Area"));
-              //  cursor1.getString(cursor1.getColumnIndex("first_name"));
-                Toast.makeText(this, "Area name" + Area_name, Toast.LENGTH_SHORT).show();
+                //  cursor1.getString(cursor1.getColumnIndex("first_name"));
+              //  Toast.makeText(this, "Area name" + Area_name, Toast.LENGTH_SHORT).show();
                 txtArea.setText(Area_name);
-
-            } while (cursor1.moveToNext());
+                Log.e(TAG, "getAreaNameHalisi: Area name" + Area_name );
+            }
         }
+        else{
+
+            Area_name = cursor1.getString(cursor1.getColumnIndex("Area"));
+            //  cursor1.getString(cursor1.getColumnIndex("first_name"));
+            //  Toast.makeText(this, "Area name" + Area_name, Toast.LENGTH_SHORT).show();
+            txtArea.setText(Area_name);
+            Log.e(TAG, "getAreaNameHalisi: Area name" + Area_name );
+            Log.e(TAG, "getAreaNameHalisi: Error part" );
+        }
+//        if (cursor1.moveToFirst()) {
+//            do {
+//                Area_name = cursor1.getString(cursor1.getColumnIndex("Area"));
+//              //  cursor1.getString(cursor1.getColumnIndex("first_name"));
+//              //  Toast.makeText(this, "Area name" + Area_name, Toast.LENGTH_SHORT).show();
+//                txtArea.setText(Area_name);
+//
+//            } while (cursor1.moveToNext());
+//        }
 
 //        if (true) {
 //
