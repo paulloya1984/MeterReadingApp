@@ -18,16 +18,15 @@ Button btnBack;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about__bawasa);
 
-//        btnBack = (Button) findViewById(R.id.btnBack);
-//        btnBack.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//               // Intent intent = new Intent(about_Bawasa.this,Nyumbani.class);
-////                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-//               // startActivity(intent);
-//               // about_Bawasa.super.onBackPressed();
-//                Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.bawasa.or.tz/index.php/about-us"));
-//            }
-//        });
+        btnBack = (Button) findViewById(R.id.btnBack);
+        btnBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.bawasa.or.tz/index.php/about-us"));
+                startActivity(i);
+
+            }
+        });
     }
 }
