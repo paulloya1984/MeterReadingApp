@@ -39,6 +39,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String TABLE_NAME_CONNECTION = "tbl_connection";
     private static final String KEY_ID = "id";
     private static final String COLUMN_CONNECTION_NUMBER = "connection_number";
+    private static final String COLUMN_CONNECTION_NAME = "connection_name";
     private static final String COLUMN_METER_NUMBER = "meter_number";
     private static final String COLUMN_METER_STATUS = "meter_status";
     private static final String COLUMN_PREVIOUS_DATE = "previous_date";
@@ -163,6 +164,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     String sql_create_tbl_connection = "CREATE TABLE " + TABLE_NAME_CONNECTION + " (\n" +
             "  " + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,\n" +
             "  " + COLUMN_CONNECTION_NUMBER + " varchar(200) ,\n" +
+            "  " + COLUMN_CONNECTION_NAME + " varchar(200) ,\n" +
             "  " + COLUMN_METER_NUMBER + " varchar(200),\n" +
             "  " + COLUMN_METER_STATUS + "  varchar(200) ,\n" +
             "  " + COLUMN_PREVIOUS_DATE + " varchar(255) ,\n" +
@@ -407,7 +409,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 /**
  * For Bulk Insert during sync
  * */
-    public boolean insertTblConnection(String connection_number, String meter_number, String meter_status, String previous_date, String reading_date,
+    public boolean insertTblConnection(String connection_number,String connection_name, String meter_number, String meter_status, String previous_date, String reading_date,
                                        String current_reading, String previous_reading, String reading_type, String current_consumption,
                                        String previous_consumption, String daily_average, String no_days, String average_consumption, String month, String zone, String route,
                                        String seq, String done, String metered,  String updated_by, String date_updated, String sales_assistant_id3,
@@ -420,6 +422,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             sqLiteDatabase.beginTransaction();
             ContentValues cv = new ContentValues();
             cv.put(COLUMN_CONNECTION_NUMBER, connection_number);
+            cv.put(COLUMN_CONNECTION_NAME,connection_name);
             cv.put(COLUMN_METER_NUMBER, meter_number);
             cv.put(COLUMN_METER_STATUS, meter_status);
             cv.put(COLUMN_PREVIOUS_DATE, previous_date);
@@ -897,7 +900,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Cursor res = null;
 
         SQLiteDatabase db = this.getWritableDatabase();
-        Log.e(TAG, "getMeterNumber_RV_where: Kabla ya swich description  "+desc + "Key: " + Key );
+        Log.e(TAG, "getMeterNumber_RV_where: Kabla ya swich description:  "+desc + " and the Key: " + Key );
 
        if(desc.equals("Connection_Number"))
        {
@@ -910,7 +913,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             }
 
         else if(desc.equals("Name"))
-            {}
+            {
+                Log.e(TAG, "getMeterNumber_RV_where: from else part" );
+
+                res = db.rawQuery("Select "+ COLUMN_METER_NUMBER +","+COLUMN_CONNECTION_NUMBER+  " FROM " + TABLE_NAME_CONNECTION+" WHERE "+ COLUMN_CONNECTION_NAME+" LIKE '%"+Key+"%'"+" ORDER BY "+COLUMN_METER_NUMBER , null);
+
+
+            }
            else
                 {
                     Log.e(TAG, "getMeterNumber_RV_where: from else part" );

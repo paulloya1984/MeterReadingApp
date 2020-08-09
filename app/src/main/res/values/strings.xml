@@ -97,7 +97,7 @@ To provide reliable, viable and affordable high quality water supply services an
     </string-array>
 
     <string-array name="Reading_Codes">
-        <item> Reading Status </item>
+        <item> Meter Status </item>
         <item> 1 = Gate Closed</item>
         <item> 2 = No Water</item>
         <item> 3 = Vacant Prop./Stopped Building </item>

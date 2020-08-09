@@ -526,6 +526,7 @@ public class synchronizeFragment extends Fragment {
 
                         JSONObject c = customersJArray.getJSONObject(i);
                         connection_number = c.getString("connection_number");
+                        String connection_name = c.getString("connection_name");
                         String meter_number = c.getString("meter_number");
                         String meter_status = c.getString("meter_status");
                         String previous_date = c.getString("previous_date");
@@ -592,7 +593,7 @@ public class synchronizeFragment extends Fragment {
 
 
 
-                        if (dataBaseHelper.insertTblConnection(connection_number, meter_number, meter_status, previous_date, reading_date,
+                        if (dataBaseHelper.insertTblConnection(connection_number,connection_name, meter_number, meter_status, previous_date, reading_date,
                                 current_reading, previous_reading, reading_type_id, current_consumption,
                                 previous_consumption, daily_average, no_days, average_consumption, month, zone, route,
                                 seq, done, metered, updated_by, date_updated, sales_assistant_id3,

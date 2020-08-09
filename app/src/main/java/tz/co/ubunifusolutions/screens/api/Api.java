@@ -82,7 +82,8 @@ Call<LoginResponse> userLogin(
 );
 
     /**
-     * Uploading Json File*/
+     * Uploading Json File
+     * haifanyi kazi*/
     @Multipart
     @POST("upload_data")
     Call<ResponseBody>uploadFile(

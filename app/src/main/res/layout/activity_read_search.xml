@@ -11,7 +11,7 @@
         android:id="@+id/idsearch_read"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center|right"
+        android:gravity="center|end"
         android:iconifiedByDefault="false"
         android:inputType="number"
         android:queryHint="Search Meter Number">
@@ -51,7 +51,7 @@
             android:id="@+id/chkName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:enabled="false"
+            android:enabled="true"
             android:padding="@dimen/cardview_default_radius"
             android:text="Name" />
 
