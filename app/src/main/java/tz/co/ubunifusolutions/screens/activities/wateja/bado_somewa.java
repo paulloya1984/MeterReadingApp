@@ -21,10 +21,10 @@ public class bado_somewa extends AppCompatActivity implements SearchView.OnQuery
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bado_somewa);
-        lv_bado= (ListView)findViewById(R.id.listview_bado);
+       // lv_bado= (ListView)findViewById(R.id.listview_bado);
         searchView_bado= (SearchView) findViewById(R.id.idsearch_bado);
         adapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,data);
-        lv_bado.setAdapter(adapter);
+      //  lv_bado.setAdapter(adapter);
         searchView_bado.setOnQueryTextListener(this);
         lv_bado.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

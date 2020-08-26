@@ -6,6 +6,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.List;
@@ -34,6 +35,8 @@ public class waliosomewaAdapter extends  RecyclerView.Adapter<waliosomewaAdapter
     public void onBindViewHolder(ViewHolder holder, int position) {
         String animal = mData.get(position);
         holder.myTextView.setText(animal);
+        String jina =  mData.get(position);
+        holder.jina_la_mteja.setText(jina);
     }
 
 
@@ -63,11 +66,16 @@ public class waliosomewaAdapter extends  RecyclerView.Adapter<waliosomewaAdapter
 
     // stores and recycles views as they are scrolled off screen
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        TextView myTextView;
+        TextView myTextView,connection_number,current_reading,jina_la_mteja;
+        ImageView picha_ya_mita;
 
         ViewHolder(View itemView) {
             super(itemView);
             myTextView = itemView.findViewById(R.id.tvWaliosomewarow);
+            connection_number = itemView.findViewById(R.id.textViewConnectionNum);
+            current_reading = itemView.findViewById(R.id.textViewCurrentReading);
+            jina_la_mteja = itemView.findViewById(R.id.textViewCustomerName);
+            picha_ya_mita = itemView.findViewById(R.id.imageView);
             itemView.setOnClickListener(this);
         }
 

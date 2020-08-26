@@ -19,19 +19,29 @@
         android:iconifiedByDefault="false">
         <requestFocus/>
     </SearchView>
-        <Spinner
+      <!--  <Spinner
             android:id="@+id/spinner_category"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:entries="@array/search_category">
 
         </Spinner>
+        -->
     </LinearLayout>
-    <ListView
-        android:id="@+id/listview_bado"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
 
-    </ListView>
+    <android.support.v7.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/badosomewa_recyclerview_expand"
+        app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+        />
+    <!-- <ListView
+         android:id="@+id/listview_bado"
+         android:layout_width="match_parent"
+         android:layout_height="wrap_content">
+
+     </ListView>
+ -->
+
 
 </LinearLayout>

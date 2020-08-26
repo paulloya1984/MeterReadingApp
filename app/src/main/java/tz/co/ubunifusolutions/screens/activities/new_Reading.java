@@ -51,6 +51,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import tz.co.ubunifusolutions.screens.R;
 import tz.co.ubunifusolutions.screens.about.about_Bawasa;
@@ -60,6 +61,7 @@ import tz.co.ubunifusolutions.screens.session.IpAddress;
 import tz.co.ubunifusolutions.screens.session.area_sessioin;
 import tz.co.ubunifusolutions.screens.storage.DatabaseHelper;
 import tz.co.ubunifusolutions.screens.storage.DatabaseHelper_node;
+import tz.co.ubunifusolutions.screens.utils.compressImage;
 
 public class new_Reading extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, com.google.android.gms.location.LocationListener, TextWatcher {
     private static final String TAG = "New Reading ";
@@ -117,11 +119,10 @@ public class new_Reading extends AppCompatActivity implements GoogleApiClient.Co
     String route, seq;
 
 
-    String name, area_code;
+    String name, area_code,from;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new__reading);
 
@@ -129,8 +130,11 @@ public class new_Reading extends AppCompatActivity implements GoogleApiClient.Co
 
         Intent i = getIntent();
         name = i.getStringExtra("item").trim();
+        from = i.getStringExtra("from").trim();
 
-       // sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
+
+
+        // sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
         //  Toast.makeText(this, name, Toast.LENGTH_SHORT).show();
 
         Context cntx = this;
@@ -158,7 +162,7 @@ public class new_Reading extends AppCompatActivity implements GoogleApiClient.Co
         txtMeterNumber.setEnabled(false);
         txtArea = findViewById(R.id.txtArea);
         txtArea.setEnabled(false);
-       // txtArea.setVisibility(View.INVISIBLE);
+        // txtArea.setVisibility(View.INVISIBLE);
         txtPreviousRead = findViewById(R.id.txtPreviousRead_newread);
         txtPreviousRead.setEnabled(false);
         mLatitudeTextView = findViewById(R.id.mLatitudeTextView);
@@ -184,6 +188,13 @@ public class new_Reading extends AppCompatActivity implements GoogleApiClient.Co
         //btnZoom.setVisibility(View.INVISIBLE);
 
 
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+        {
+
+            Toast.makeText(this, "Check kama permission ipo? New reading file", Toast.LENGTH_SHORT).show();
+
+            return;
+        }
         mLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
 
         txtCurrentReading = findViewById(R.id.txtCurrentReading);
@@ -225,6 +236,7 @@ public class new_Reading extends AppCompatActivity implements GoogleApiClient.Co
                     txtCurrentReading.requestFocus();
                     return;
                 }
+
 /*
  String cur = "" + txtCurrentReading.getText();
         if (cur.length() == 0) {
@@ -296,6 +308,15 @@ public class new_Reading extends AppCompatActivity implements GoogleApiClient.Co
                 showphoto_Dialog();
             }
         });
+        if(from.equals("waliosomewa")){
+            //String a= "" +  deleteAssocoatedImage();
+           // Log.d(TAG, "onCreate: "+a);
+            Toast.makeText(cntx, "Logic ya kuedit bado kufuta picha", Toast.LENGTH_SHORT).show();
+            /**
+             * Tengeneza table images, weka file name na path yake full during taking photo*/
+
+
+        }
     }
 
     // Kupiga Picha
@@ -326,6 +347,8 @@ public class new_Reading extends AppCompatActivity implements GoogleApiClient.Co
 
             startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
            // imageView.setImageResource(uriSavedImage);
+
+
         }
     }
 
@@ -357,9 +380,40 @@ public class new_Reading extends AppCompatActivity implements GoogleApiClient.Co
         return image;
     }
 
-    public void getCustomerDetails(String MeterNumber)
-    {
+    public void getCustomerDetails(String MeterNumber) {
 
+        if (from.equals("waliosomewa")) {
+            String mNumber = MeterNumber;
+            // Toast.makeText(this, mNumber, Toast.LENGTH_SHORT).show();
+            txtMeterNumber.setText(mNumber);
+            dataBaseHelper = new DatabaseHelper(new_Reading.this);
+            Cursor cursor = dataBaseHelper.getDetils_waliosomewa(mNumber);
+            String connum;
+            if (cursor.moveToFirst()) {
+                do {
+
+                    connum = cursor.getString(cursor.getColumnIndex("connection_number"));
+                    String prevread = cursor.getString(cursor.getColumnIndex("previous_reading"));
+                    String route = cursor.getString(cursor.getColumnIndex("route"));
+                    String seq = cursor.getString(cursor.getColumnIndex("seq"));
+
+
+                    txtConnectionNumber.setText(connum);
+                    txtPreviousRead.setText(prevread);
+                    txtSeq.setText(seq);
+                    txtRoute.setText(route);
+                    // txtArea.setText("Weka Eneo Hapa");
+                    mLatitudeTextView.setText(cursor.getString(cursor.getColumnIndex("latitude")));
+                    mLongitudeTextView.setText(cursor.getString(cursor.getColumnIndex("longitude")));
+
+                } while (cursor.moveToNext());
+                cursor.close();
+                getCustomerName(connum);
+                getAreaDetails(connum);
+            }
+
+        }
+        else{
         String mNumber = MeterNumber;
         // Toast.makeText(this, mNumber, Toast.LENGTH_SHORT).show();
         txtMeterNumber.setText(mNumber);
@@ -389,7 +443,7 @@ public class new_Reading extends AppCompatActivity implements GoogleApiClient.Co
             getAreaDetails(connum);
 
         }
-
+    }
         // getAreaDetails(connum);
     }
 
@@ -535,7 +589,7 @@ public class new_Reading extends AppCompatActivity implements GoogleApiClient.Co
 
         dataBaseHelper = new DatabaseHelper((new_Reading.this));
 
-        if (dataBaseHelper.insertNewReading(areaz, connectionnumber, currentreading, lat, longi, meternumber, previous_read, updated_by, status, route, seq)) {
+        if (dataBaseHelper.insertNewReading(areaz, connectionnumber, currentreading, lat, longi, meternumber, previous_read, updated_by, status, route, seq,"")) {
             Toast.makeText(new_Reading.this, "Reading Saved Successfully \n For Meter Number " + meternumber, Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(new_Reading.this, read_Search.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
@@ -841,58 +895,144 @@ public class new_Reading extends AppCompatActivity implements GoogleApiClient.Co
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        dataBaseHelper = new DatabaseHelper((new_Reading.this));
+        String jina = "",ilipo = "";
         super.onActivityResult(requestCode, resultCode, data);
+
+
+
         //  if (requestCode == CAMERA_REQUEST && resultCode == Activity.RESULT_OK)
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-          //  Bundle extras = data.getExtras();
-          //  Bitmap photo = (Bitmap) data.getExtras().get("data");
+
+            //Bundle extras = data.getExtras();
+            //getLastModified
+            try{
+                File imagesFolder = new File(Environment.getExternalStorageDirectory(), DNAME + "/Images");
+//                final Uri imageUri = data.getData();
+//
+               compressImage compress= new compressImage();
+               File compressedImage =  compress.getCompressedImageFile(getLastModified(imagesFolder.getPath()),this);
+               compressedImage.createNewFile();
+               jina =compressedImage.getName();
+               ilipo = compressedImage.getPath();
+
+            } catch (IOException e) {
+                Toast.makeText(this, "Error while compressing picha", Toast.LENGTH_SHORT).show();
+            }
+            //compressImage compress= new compressImage();
+           // compress.getCompressedImageFile(new File(uriSavedImage.getPath()),this);
+
+            // Bitmap photo = (Bitmap) data.getExtras().get("data");
 
            // filePath1 = data.getData();
           //  Log.e(TAG, "onActivityResult: Path ya image" + filePath1 );
            //  imageView.setImageBitmap(photo);
 
 
+
+
             String updated_by = String.valueOf(1);
 
-            dataBaseHelper = new DatabaseHelper((new_Reading.this));
-
-            if (dataBaseHelper.insertNewReading(areaz, connectionnumber, currentreading, lat, longi, meternumber, previous_read, updated_by, status, route, seq))
+            if (from.equals("waliosomewa"))
             {
-               // Toast.makeText(new_Reading.this, "Reading Saved Successfully \n For Meter Number " + meternumber, Toast.LENGTH_SHORT).show();
+                /**
+                 * Kupdate reading */
 
-                Toast toast = new Toast(getApplicationContext());
-                toast.setDuration(Toast.LENGTH_LONG);
+                if(dataBaseHelper.updatePicha(jina,ilipo))
+                {
+                    if (dataBaseHelper.updateReading(areaz, connectionnumber, currentreading, lat, longi, meternumber, previous_read, updated_by, status, route, seq,ilipo)) {
+                        // Toast.makeText(new_Reading.this, "Reading Saved Successfully \n For Meter Number " + meternumber, Toast.LENGTH_SHORT).show();
 
-                //inflate view
-                View custom_view = getLayoutInflater().inflate(R.layout.toast_icon_text, null);
-                ((TextView) custom_view.findViewById(R.id.message)).setText("Reading Saved \n For Meter Number \n " + meternumber);
-                ((ImageView) custom_view.findViewById(R.id.icon)).setImageResource(R.drawable.ic_done);
-                ((CardView) custom_view.findViewById(R.id.parent_view)).setCardBackgroundColor(getResources().getColor(R.color.green_500));
+                        Toast toast = new Toast(getApplicationContext());
+                        toast.setDuration(Toast.LENGTH_LONG);
 
-                toast.setView(custom_view);
-                toast.show();
+                        //inflate view
+                        View custom_view = getLayoutInflater().inflate(R.layout.toast_icon_text, null);
+                        ((TextView) custom_view.findViewById(R.id.message)).setText("Reading Saved \n For Meter Number \n " + meternumber);
+                        ((ImageView) custom_view.findViewById(R.id.icon)).setImageResource(R.drawable.ic_done);
+                        ((CardView) custom_view.findViewById(R.id.parent_view)).setCardBackgroundColor(getResources().getColor(R.color.green_500));
 
-                new_Reading.super.onBackPressed();
+                        toast.setView(custom_view);
+                        toast.show();
 
-            } else {
-               // Toast.makeText(new_Reading.this, "An Error Has Occoured", Toast.LENGTH_LONG).show();
+                        new_Reading.super.onBackPressed();
 
-                Toast toast = new Toast(getApplicationContext());
-                toast.setDuration(Toast.LENGTH_LONG);
+                    }else {
+                        // Toast.makeText(new_Reading.this, "An Error Has Occoured", Toast.LENGTH_LONG).show();
 
-                //inflate view
-                View custom_view = getLayoutInflater().inflate(R.layout.toast_icon_text, null);
-                ((TextView) custom_view.findViewById(R.id.message)).setText("An Error Has Occoured");
-                ((ImageView) custom_view.findViewById(R.id.icon)).setImageResource(R.drawable.ic_close);
-                ((CardView) custom_view.findViewById(R.id.parent_view)).setCardBackgroundColor(getResources().getColor(R.color.red_600));
+                        Toast toast = new Toast(getApplicationContext());
+                        toast.setDuration(Toast.LENGTH_LONG);
 
-                toast.setView(custom_view);
-                toast.show();
+                        //inflate view
+                        View custom_view = getLayoutInflater().inflate(R.layout.toast_icon_text, null);
+                        ((TextView) custom_view.findViewById(R.id.message)).setText("An Error Has Occoured");
+                        ((ImageView) custom_view.findViewById(R.id.icon)).setImageResource(R.drawable.ic_close);
+                        ((CardView) custom_view.findViewById(R.id.parent_view)).setCardBackgroundColor(getResources().getColor(R.color.red_600));
+
+                        toast.setView(custom_view);
+                        toast.show();
+
+                    }
+                }
 
             }
+            else
+                {
+                    /**
+                     * Insert reading fresh*/
+                    if(dataBaseHelper.insertPicha(jina,ilipo))
+                    {
+                        if (dataBaseHelper.insertNewReading(areaz, connectionnumber, currentreading, lat, longi, meternumber, previous_read, updated_by, status, route, seq,ilipo)) {
+                            // Toast.makeText(new_Reading.this, "Reading Saved Successfully \n For Meter Number " + meternumber, Toast.LENGTH_SHORT).show();
 
+                            Toast toast = new Toast(getApplicationContext());
+                            toast.setDuration(Toast.LENGTH_LONG);
 
+                            //inflate view
+                            View custom_view = getLayoutInflater().inflate(R.layout.toast_icon_text, null);
+                            ((TextView) custom_view.findViewById(R.id.message)).setText("Reading Saved \n For Meter Number \n " + meternumber);
+                            ((ImageView) custom_view.findViewById(R.id.icon)).setImageResource(R.drawable.ic_done);
+                            ((CardView) custom_view.findViewById(R.id.parent_view)).setCardBackgroundColor(getResources().getColor(R.color.green_500));
 
+                            toast.setView(custom_view);
+                            toast.show();
+
+                            new_Reading.super.onBackPressed();
+
+                        } else {
+                            // Toast.makeText(new_Reading.this, "An Error Has Occoured", Toast.LENGTH_LONG).show();
+
+                            Toast toast = new Toast(getApplicationContext());
+                            toast.setDuration(Toast.LENGTH_LONG);
+
+                            //inflate view
+                            View custom_view = getLayoutInflater().inflate(R.layout.toast_icon_text, null);
+                            ((TextView) custom_view.findViewById(R.id.message)).setText("An Error Has Occoured");
+                            ((ImageView) custom_view.findViewById(R.id.icon)).setImageResource(R.drawable.ic_close);
+                            ((CardView) custom_view.findViewById(R.id.parent_view)).setCardBackgroundColor(getResources().getColor(R.color.red_600));
+
+                            toast.setView(custom_view);
+                            toast.show();
+
+                        }
+                    }
+                    else
+                    {
+                        // Toast.makeText(new_Reading.this, "An Error Has Occoured", Toast.LENGTH_LONG).show();
+
+                        Toast toast = new Toast(getApplicationContext());
+                        toast.setDuration(Toast.LENGTH_LONG);
+
+                        //inflate view
+                        View custom_view = getLayoutInflater().inflate(R.layout.toast_icon_text, null);
+                        ((TextView) custom_view.findViewById(R.id.message)).setText("An Error Has Occoured");
+                        ((ImageView) custom_view.findViewById(R.id.icon)).setImageResource(R.drawable.ic_close);
+                        ((CardView) custom_view.findViewById(R.id.parent_view)).setCardBackgroundColor(getResources().getColor(R.color.red_600));
+
+                        toast.setView(custom_view);
+                        toast.show();
+                    }
+                }
         }
 
 
@@ -924,6 +1064,51 @@ public class new_Reading extends AppCompatActivity implements GoogleApiClient.Co
 
         mydialog.setArguments(args);
         mydialog.show(getSupportFragmentManager(), "Current Reading Photo");
+    }
+
+
+    //Kuapata last created file in Directory
+    public static File getLastModified(String directoryFilePath)
+    {
+        File directory = new File(directoryFilePath);
+        File[] files = directory.listFiles(File::isFile);
+        long lastModifiedTime = Long.MIN_VALUE;
+        File chosenFile = null;
+
+        if (files != null)
+        {
+            for (File file : files)
+            {
+                if (file.lastModified() > lastModifiedTime)
+                {
+                    chosenFile = file;
+                    lastModifiedTime = file.lastModified();
+                }
+            }
+        }
+
+        return chosenFile;
+    }
+
+    public boolean deleteAssocoatedImage(){
+        List mylist = null;
+        File imagesFolder = new File(Environment.getExternalStorageDirectory(), DNAME + "/Images");
+        File list[] = imagesFolder.listFiles();
+        for(int i=0;i<list.length;i++)
+        {
+            mylist.add(list[i].getName());
+        }
+        for(int i=0;i<mylist.size();i++){
+            Log.d(TAG, "deleteAssocoatedImage: "+mylist.get(i));
+        }
+
+
+        //File delete_Asso = getLastModified(imagesFolder.getPath());
+       // boolean delete = delete_Asso.delete();
+
+
+
+        return true;
     }
 
 

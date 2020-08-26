@@ -68,4 +68,46 @@ public class NotificationHelper {
         assert mNotificationManager != null;
         mNotificationManager.notify(0 /* Request Code */, mBuilder.build());
     }
+
+    public  void uploadnotifiaction(String title, String message, int start, int end)
+    {
+        /**Creates an explicit intent for an Activity in your app**/
+        Intent resultIntent = new Intent(mContext , MainActivity.class);
+        resultIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        PendingIntent resultPendingIntent = PendingIntent.getActivity(mContext,
+                0 /* Request code */, resultIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
+
+        mBuilder = new NotificationCompat.Builder(mContext);
+        //  if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+        mBuilder.setSmallIcon(R.mipmap.ic_launcher);
+        mBuilder.setContentTitle(title)
+                .setContentText(message +": " +start+" of "+end)
+                .setAutoCancel(false)
+                .setProgress(end,start,false)
+                .setContentIntent(resultPendingIntent);
+
+        mNotificationManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O)
+        {
+            int importance = NotificationManager.IMPORTANCE_LOW;
+            NotificationChannel notificationChannel = new NotificationChannel(NOTIFICATION_CHANNEL_ID, "NOTIFICATION_CHANNEL_NAME", importance);
+            notificationChannel.enableLights(true);
+            notificationChannel.setLightColor(Color.RED);
+             assert mNotificationManager != null;
+
+            mBuilder.setProgress(end,start,false);
+            mBuilder.setChannelId(NOTIFICATION_CHANNEL_ID);
+            mNotificationManager.createNotificationChannel(notificationChannel);
+        }
+        assert mNotificationManager != null;
+
+        mNotificationManager.notify(0 /* Request Code */, mBuilder.build());
+
+
+    }
+
+
 }

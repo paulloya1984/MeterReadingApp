@@ -118,6 +118,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String COLUMN_SEQ_R = "seq";
     private static final String COLUMN_UPDATED_AT_R = "updated_at";
     private static final String COLUMN_UPDATED_BY_R = "updated_by";
+    private static final String COLUMN_IMAGE_URI_R = "image_uri";
+
 
     // TABLE CUSTOMERS
     //customer_connection, first_name, middle_name, last_name, mobile_number, telephone_number, work_phone, bill_area,
@@ -260,7 +262,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             "  " + COLUMN_ROUTE_R + " INTEGER  ,\n" +
             "  " + COLUMN_SEQ_R + " INTEGER  ,\n" +
             "  " + COLUMN_UPDATED_AT_R + " INTEGER  ,\n" +
-            "  " + COLUMN_UPDATED_BY_R + " INTEGER  \n" +
+            "  " + COLUMN_UPDATED_BY_R + " INTEGER  ,\n" +
+            "  " + COLUMN_IMAGE_URI_R + " varchar(200) \n" +
             ") ";
 
 
@@ -614,9 +617,76 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
 
     }
+    public boolean updateReading(String bill_area, String connection_number, String current_reading, String latitude, String longitude, String meter_number, String previous_reading, String updated_by,String statuz,String route,String seq,String ilipoPicha)
+    {
+        SQLiteDatabase sqLiteDatabase_readLog = getWritableDatabase();
+        long flag1 = 0;
+        try {
+            sqLiteDatabase_readLog.beginTransaction();
+            ContentValues cv_readLog = new ContentValues();
+            cv_readLog.put(COLUMN_BILL_AREA_R, bill_area);
+            cv_readLog.put(COLUMN_CONNECTION_NUMBER_R, connection_number);
+            cv_readLog.put(COLUMN_CURRENT_READING_R, current_reading);
+            cv_readLog.put(COLUMN_LATITUDE_R, latitude);
+            cv_readLog.put(COLUMN_LONGITUDE_R, longitude);
+            cv_readLog.put(COLUMN_METER_NUMBER_R, meter_number);
+
+            // String status = String.valueOf(7);
+
+            cv_readLog.put(COLUMN_METER_STATUS_R, statuz);
+            cv_readLog.put(COLUMN_PREVIOUS_READING_R, previous_reading);
+
+            String pushed = String.valueOf(10);
+
+            cv_readLog.put(COLUMN_PUSHED_R, pushed);
+
+            Calendar cal = Calendar.getInstance();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            String readingDate = sdf.format(cal.getTime());
+            //  String readingDate = String.valueOf(cal.getTime());
 
 
-    public boolean insertNewReading(String bill_area, String connection_number, String current_reading, String latitude, String longitude, String meter_number, String previous_reading, String updated_by,String statuz,String route,String seq)
+            cv_readLog.put(COLUMN_READING_DATE_R, readingDate);
+
+            String read_type = String.valueOf(2);
+            cv_readLog.put(COLUMN_READING_TYPE_R, read_type);
+
+            cv_readLog.put(COLUMN_ROUTE_R, route);
+            cv_readLog.put(COLUMN_SEQ_R, seq);
+
+            long updated_at = System.currentTimeMillis();
+            cv_readLog.put(COLUMN_UPDATED_AT_A, updated_at);
+
+            cv_readLog.put(COLUMN_UPDATED_BY_A, updated_by);
+            cv_readLog.put(COLUMN_IMAGE_URI_R,ilipoPicha);
+            // cv.put(COLUMN_PUSHED_R, pushed);
+
+            flag1 =sqLiteDatabase_readLog.update(TABLE_NAME_PICHA,cv_readLog,COLUMN_CONNECTION_NUMBER_R+"="+connection_number,null);
+
+            //flag1 = sqLiteDatabase_readLog.insert(TABLE_NAME_READ_LOG, null, cv_readLog);
+
+            sqLiteDatabase_readLog.setTransactionSuccessful();
+            delete_AfterInsert(connection_number);
+            Log.i(TAG, "Done" + TABLE_NAME_READ_LOG);
+            // sqLiteDatabase_Area.close();
+        } catch (Exception e) {
+            Log.e(TAG, "An Error Has Occurred" + e.getMessage());
+        } finally {
+            sqLiteDatabase_readLog.endTransaction();
+        }
+        if (flag1 == -1) {
+            Log.i(TAG, "Failed to Add Reading");
+            return false;
+        } else {
+            Log.i(TAG, "Add Reading was successful");
+            return true;
+        }
+
+    }
+
+
+
+    public boolean insertNewReading(String bill_area, String connection_number, String current_reading, String latitude, String longitude, String meter_number, String previous_reading, String updated_by,String statuz,String route,String seq,String ilipoPicha)
     {
         SQLiteDatabase sqLiteDatabase_readLog = getWritableDatabase();
         long flag1 = 0;
@@ -657,6 +727,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             cv_readLog.put(COLUMN_UPDATED_AT_A, updated_at);
 
             cv_readLog.put(COLUMN_UPDATED_BY_A, updated_by);
+            cv_readLog.put(COLUMN_IMAGE_URI_R,ilipoPicha);
             // cv.put(COLUMN_PUSHED_R, pushed);
 
             flag1 = sqLiteDatabase_readLog.insert(TABLE_NAME_READ_LOG, null, cv_readLog);
@@ -773,24 +844,53 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
 
-
-    public boolean insertPichaKwaSQLite(String Picha_name, String Picha_filePath)
+    public boolean updatePicha(String Picha_name, String Picha_filePath)
     {
         SQLiteDatabase sqLiteDatabase_Picha = getWritableDatabase();
         long flag_Picha = 0;
         try {
             sqLiteDatabase_Picha.beginTransaction();
             ContentValues cv_Picha = new ContentValues();
-            cv_Picha.put(COLUMN_AREA_ID, Picha_name);
-            cv_Picha.put(COLUMN_AREA_CODE, Picha_filePath);
+            cv_Picha.put(COLUMN_NAME, Picha_name);
+            cv_Picha.put(COLUMN_PATH, Picha_filePath);
+
+//  flag_Picha = sqLiteDatabase_Picha.insert(TABLE_NAME_AREAS, null, cv_Picha);
+            flag_Picha =sqLiteDatabase_Picha.update(TABLE_NAME_PICHA,cv_Picha,COLUMN_NAME+"="+Picha_name,null);
+
+            sqLiteDatabase_Picha.setTransactionSuccessful();
+            Log.i(TAG, "Done" + TABLE_NAME_AREAS);
+            // sqLiteDatabase_Area.close();
+        } catch (Exception e) {
+            Log.e(TAG, "An Error Has Occurred" + e.getMessage());
+        } finally {
+            sqLiteDatabase_Picha.endTransaction();
+        }
+        if (flag_Picha == -1) {
+            Log.i(TAG, "Failed to Save Picha on Device Memory");
+            return false;
+        } else {
+            Log.i(TAG, "Add Picha was successful");
+            return true;
+        }
+    }
+
+    public boolean insertPicha(String Picha_name, String Picha_filePath)
+    {
+        SQLiteDatabase sqLiteDatabase_Picha = getWritableDatabase();
+        long flag_Picha = 0;
+        try {
+            sqLiteDatabase_Picha.beginTransaction();
+            ContentValues cv_Picha = new ContentValues();
+            cv_Picha.put(COLUMN_NAME, Picha_name);
+            cv_Picha.put(COLUMN_PATH, Picha_filePath);
 //            cv_Picha.put(COLUMN_AREA, Area);
 //            cv_Picha.put(COLUMN_ZONE_ID, zone_id);
 
 
-            flag_Picha = sqLiteDatabase_Picha.insert(TABLE_NAME_AREAS, null, cv_Picha);
+            flag_Picha = sqLiteDatabase_Picha.insert(TABLE_NAME_PICHA, null, cv_Picha);
 
             sqLiteDatabase_Picha.setTransactionSuccessful();
-            Log.i(TAG, "Done" + TABLE_NAME_AREAS);
+            Log.i(TAG, "Done" + TABLE_NAME_PICHA);
             // sqLiteDatabase_Area.close();
         } catch (Exception e) {
             Log.e(TAG, "An Error Has Occurred" + e.getMessage());
@@ -865,7 +965,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public Cursor getMeterNumber_RV()
     {
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor res = db.rawQuery("Select "+ COLUMN_METER_NUMBER +","+COLUMN_CONNECTION_NUMBER+ " FROM " + TABLE_NAME_CONNECTION +" ORDER BY "+COLUMN_METER_NUMBER, null);
+        Cursor res = db.rawQuery("Select "+ COLUMN_METER_NUMBER +","+COLUMN_CONNECTION_NUMBER+ " FROM " + TABLE_NAME_CONNECTION +" ORDER BY "+COLUMN_METER_NUMBER +" LIMIT "+ 20, null);
       /*  Cursor res1 = db.rawQuery("Select cu." +COLUMN_FIRST_NAME+", cu."+COLUMN_MIDDLE_NAME+", cu."+COLUMN_LAST_NAME+", cu."+COLUMN_BILL_AREA+
                ", con."+COLUMN_METER_NUMBER+" FROM " + TABLE_NAME_CUSTOMER+" cu LEFT JOIN "+ TABLE_NAME_CONNECTION+" con",null);
         System.out.println("Select cu." +COLUMN_FIRST_NAME+", cu."+COLUMN_MIDDLE_NAME+", cu."+COLUMN_LAST_NAME+", cu."+COLUMN_BILL_AREA+
@@ -882,14 +982,26 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         *   SELECT `first_name`, `middle_name`, `last_name` FROM `tbl_customer` WHERE `customer_connection` = '000010'
         * */
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor res = db.rawQuery("Select "+ COLUMN_FIRST_NAME +","+COLUMN_MIDDLE_NAME+ ","+COLUMN_LAST_NAME+ " FROM " + TABLE_NAME_CUSTOMER, null);
+        Cursor res = db.rawQuery("Select "+ COLUMN_FIRST_NAME +","+COLUMN_MIDDLE_NAME+ ","+COLUMN_LAST_NAME+ " FROM " + TABLE_NAME_CUSTOMER +" LIMIT "+ 10, null);
+        return res;
+
+    }
+    public Cursor getImage_URI()
+    {
+        /*
+         *   SELECT `first_name`, `middle_name`, `last_name` FROM `tbl_customer` WHERE `customer_connection` = '000010'
+         * */
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor res = db.rawQuery("Select "+ COLUMN_PATH + " FROM " + TABLE_NAME_PICHA+" LIMIT "+ 20, null);
         return res;
 
     }
     public Cursor getMeterNumber_waliosomewa()
     {
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor res = db.rawQuery("Select "+ COLUMN_METER_NUMBER + " FROM " + TABLE_NAME_READ_LOG +" ORDER BY "+COLUMN_METER_NUMBER, null);
+      // Cursor res = db.rawQuery("Select "+ COLUMN_METER_NUMBER + " FROM " + TABLE_NAME_READ_LOG +" ORDER BY "+COLUMN_METER_NUMBER, null);
+        Cursor res = db.rawQuery("Select * FROM " + TABLE_NAME_READ_LOG +" ORDER BY "+COLUMN_METER_NUMBER, null);
+
         return res;
 
     }
@@ -904,19 +1016,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
        if(desc.equals("Connection_Number"))
        {
-           res = db.rawQuery("Select " + COLUMN_METER_NUMBER + "," + COLUMN_CONNECTION_NUMBER + " FROM " + TABLE_NAME_CONNECTION + " WHERE " + COLUMN_CONNECTION_NUMBER + " LIKE '%" + Key + "%'" + " ORDER BY " + COLUMN_CONNECTION_NUMBER, null);
+
+           res = db.rawQuery("Select " + COLUMN_METER_NUMBER + "," + COLUMN_CONNECTION_NUMBER + " FROM " + TABLE_NAME_CONNECTION + " WHERE " + COLUMN_CONNECTION_NUMBER + " =='" + Key + "'" + " ORDER BY " + COLUMN_CONNECTION_NUMBER +" LIMIT "+ 10, null);
             }
 
         else if(desc.equals("Meter_Number"))
                 {
-                    res = db.rawQuery("Select " + COLUMN_METER_NUMBER + "," + COLUMN_CONNECTION_NUMBER + " FROM " + TABLE_NAME_CONNECTION + " WHERE " + COLUMN_METER_NUMBER + " LIKE '%" + Key + "%'" + " ORDER BY " + COLUMN_METER_NUMBER, null);
+                    res = db.rawQuery("Select " + COLUMN_METER_NUMBER + "," + COLUMN_CONNECTION_NUMBER + " FROM " + TABLE_NAME_CONNECTION + " WHERE " + COLUMN_METER_NUMBER +  " =='" + Key + "'"  + " ORDER BY " + COLUMN_METER_NUMBER +" LIMIT "+ 15, null);
             }
 
         else if(desc.equals("Name"))
             {
                 Log.e(TAG, "getMeterNumber_RV_where: from else part" );
 
-                res = db.rawQuery("Select "+ COLUMN_METER_NUMBER +","+COLUMN_CONNECTION_NUMBER+  " FROM " + TABLE_NAME_CONNECTION+" WHERE "+ COLUMN_CONNECTION_NAME+" LIKE '%"+Key+"%'"+" ORDER BY "+COLUMN_METER_NUMBER , null);
+                res = db.rawQuery("Select "+ COLUMN_METER_NUMBER +","+COLUMN_CONNECTION_NUMBER+  " FROM " + TABLE_NAME_CONNECTION+" WHERE "+ COLUMN_CONNECTION_NAME+" LIKE '%"+Key+"%'"+" ORDER BY "+COLUMN_METER_NUMBER +" LIMIT " +15, null);
 
 
             }
@@ -924,7 +1037,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 {
                     Log.e(TAG, "getMeterNumber_RV_where: from else part" );
 
- res = db.rawQuery("Select "+ COLUMN_METER_NUMBER +","+COLUMN_CONNECTION_NUMBER+  " FROM " + TABLE_NAME_CONNECTION+" WHERE "+ COLUMN_METER_NUMBER+" LIKE '%"+Key+"%'"+" ORDER BY "+COLUMN_METER_NUMBER , null);
+ res = db.rawQuery("Select "+ COLUMN_METER_NUMBER +","+COLUMN_CONNECTION_NUMBER+  " FROM " + TABLE_NAME_CONNECTION+" WHERE "+ COLUMN_METER_NUMBER+" LIKE '%"+Key+"%'"+" ORDER BY "+COLUMN_METER_NUMBER +" LIMIT " +15, null);
 
                 }
         return res;
@@ -936,7 +1049,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     {
         String key = Key;
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor res = db.rawQuery("Select "+ COLUMN_METER_NUMBER +","+COLUMN_CONNECTION_NUMBER+ " FROM " + TABLE_NAME_READ_LOG+" WHERE "+ COLUMN_METER_NUMBER+" LIKE '%"+key+"%'"+" ORDER BY "+COLUMN_METER_NUMBER , null);
+        Cursor res = db.rawQuery("Select * FROM " + TABLE_NAME_READ_LOG+" WHERE "+ COLUMN_METER_NUMBER+" LIKE '%"+key+"%'"+" ORDER BY "+COLUMN_METER_NUMBER , null);
         return res;
     }
     public Cursor getAllReadings(String Key)
@@ -994,6 +1107,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String key = mNumn;
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor res = db.rawQuery("Select "+COLUMN_CONNECTION_NUMBER+" ,"+ COLUMN_PREVIOUS_READING+" ,"+ COLUMN_LATITUDE+" ," + COLUMN_LONGITUDE +" ," + COLUMN_ROUTE+" ," + COLUMN_SEQ+ " FROM " + TABLE_NAME_CONNECTION +" WHERE "+ COLUMN_METER_NUMBER+" =='"+key+"'", null);
+        return res;
+    }
+    public Cursor getDetils_waliosomewa(String mNumn)
+    {
+        String key = mNumn;
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor res = db.rawQuery("Select * FROM " + TABLE_NAME_READ_LOG +" WHERE "+ COLUMN_METER_NUMBER+" =='"+key+"'", null);
         return res;
     }
     public Cursor getArea(String nNum)
@@ -1187,14 +1307,26 @@ return res_customer;
 
     }
     public void ondoaCustomers()
-    {/**
-     WHY ONDOA CUSTOMERS NAONDOA ONLY AREAS
-     BY ME 12112019
-     */
+    {
         SQLiteDatabase sqLiteDatabase = getWritableDatabase();
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME_AREAS);
         sqLiteDatabase.execSQL(sql_create_tbl_areas);
 
+    }
+
+    public void ondoaPicha()
+    {
+        SQLiteDatabase sqLiteDatabase = getWritableDatabase();
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME_PICHA);
+        sqLiteDatabase.execSQL(sql_create_tbl_images);
+//TABLE_NAME_READ_LOG
+    }
+    public void ondoaUsomaji()
+    {
+        SQLiteDatabase sqLiteDatabase = getWritableDatabase();
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME_READ_LOG);
+        sqLiteDatabase.execSQL(sql_create_tbl_read_log);
+//TABLE_NAME_READ_LOG
     }
 
 }

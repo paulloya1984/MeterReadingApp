@@ -6,6 +6,7 @@
         android:id="@+id/about_App"
         android:orderInCategory="100"
         android:title="@string/about_application"
+        android:icon="@drawable/ic_info"
         app:showAsAction="never" />
     <item
         android:id="@+id/about_Ubunifu"
@@ -13,16 +14,7 @@
         android:orderInCategory="100"
         android:title="@string/about_ubunifu_solutions"
         app:showAsAction="never" />
-    <item
-        android:id="@+id/fault_kubwa"
-        android:icon="@drawable/ic_fault"
-        android:title="Faults"
-        />
-    <item
-        android:id="@+id/location"
-        android:icon="@drawable/ic_map"
-        android:title="Loacation"
-        />
+
 
 
     <item
@@ -33,6 +25,7 @@
         />
     <item
         android:id="@+id/logoff_mnu"
+        android:icon="@drawable/ic_arrow_back_black_24dp"
         android:orderInCategory="100"
         android:title="Sign Off"
         app:showAsAction="never"

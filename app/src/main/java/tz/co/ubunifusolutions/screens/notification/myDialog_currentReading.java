@@ -3,6 +3,7 @@ package tz.co.ubunifusolutions.screens.notification;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -17,6 +18,7 @@ import android.widget.TextView;
 
 
 import tz.co.ubunifusolutions.screens.R;
+import tz.co.ubunifusolutions.screens.activities.new_Reading;
 
 public class myDialog_currentReading extends AppCompatDialogFragment {
    int mNum;
@@ -44,6 +46,7 @@ private TextView connectionNumber;
         String aa = getArguments().getString("data");
         Bundle mArgs = getArguments();
         String conn_number = mArgs.getString("conn_number");
+        String meter =mArgs.getString("meter_number");
         //String nameFav = mArgs.getString("fav_name");
        // String name = "";
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -64,43 +67,13 @@ private TextView connectionNumber;
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
 
-                        // get prompts.xml view
-                        LayoutInflater li = LayoutInflater.from(getActivity());
-                        View promptsView = li.inflate(R.layout.read_modify_prompt, null);
+                        Intent intent = new Intent(getContext(), new_Reading.class);
+                        intent.putExtra("item", meter);
+                        intent.putExtra("from", "waliosomewa");
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                        startActivity(intent);
 
 
-                        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity())
-                                .setTitle("Rudia")
-                                .setMessage("Usomaji wa mara ya pili");
-
-                        // set prompts.xml to alertdialog builder
-                         alertDialogBuilder.setView(promptsView);
-                        final EditText userInput = (EditText) promptsView.findViewById(R.id.txtEdit_updateread);
-
-                        // set dialog message
-                        alertDialogBuilder
-                                .setCancelable(false)
-                                .setPositiveButton("OK",
-                                        new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog,int id) {
-                                                String c = String.valueOf(userInput.getText());
-                                                Log.e("Mfano", "onClick: "+ c);
-
-
-}
-                                        })
-                                .setNegativeButton("Cancel",
-                                        new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog,int id) {
-                                                dialog.cancel();
-                                            }
-                                        });
-
-
-                        AlertDialog alertDialog = alertDialogBuilder.create();
-
-                        // show it
-                        alertDialog.show();
                     }
                 })
 

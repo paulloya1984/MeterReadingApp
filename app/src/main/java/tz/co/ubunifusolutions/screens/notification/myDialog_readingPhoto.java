@@ -19,7 +19,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import tz.co.ubunifusolutions.screens.R;
-
+/**Haitumiki hii futa*/
 public class myDialog_readingPhoto extends AppCompatDialogFragment {
    int mNum;
    ImageView photo;

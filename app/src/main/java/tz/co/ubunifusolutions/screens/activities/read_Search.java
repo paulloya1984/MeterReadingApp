@@ -26,7 +26,7 @@ public class read_Search extends AppCompatActivity implements readSearch_Adapter
     SearchView searchView_bado;
 
     private List<String> meterList;
-    DatabaseHelper dataBaseHelper;
+    DatabaseHelper dataBaseHelper,dtHelper;
     ArrayList<String> animalNames;
     ArrayList<String> jinaLaMteja;
     RecyclerView recyclerView;
@@ -34,7 +34,7 @@ public class read_Search extends AppCompatActivity implements readSearch_Adapter
 
     String Full_name = "";
     String f_name,m_name,l_name;
-    Cursor res,res_name;
+    Cursor res,res_name,rs;
     private static final String TAG = "From Read Search class";
 
     @Override
@@ -95,6 +95,7 @@ public class read_Search extends AppCompatActivity implements readSearch_Adapter
 
 
         // set up the RecyclerView
+
         recyclerView = findViewById(R.id.rvAnimals);
 
         dataBaseHelper = new DatabaseHelper(read_Search.this);
@@ -144,49 +145,127 @@ try {
 //    adapter.setClickListener(this);
 //    recyclerView.setAdapter(adapter);
 }
+ /*
+ * Mwisho wa setting up Recycler view*/
 
 searchView_bado.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+
+
     @Override
     public boolean onQueryTextSubmit(String query) {
         String desc = "";
-        if(chkConnNumber.isChecked()){
+        if (chkConnNumber.isChecked()) {
             desc = "Connection_Number";
+            searchView_bado.setQueryHint("Enter Valid Account Number");
 
-        }else if(chkMeterNumber.isChecked())
-        {  desc = "Meter_Number";}
-        else if(chkName.isChecked())
-        {  desc = "Name";}
-        Log.e(TAG, "onQueryTextSubmit: "+desc );
-       CharSequence key =  searchView_bado.getQuery();
+        } else if (chkMeterNumber.isChecked()) {
+            desc = "Meter_Number";
+            searchView_bado.setQueryHint("Enter Valid Meter Number");
+        } else if (chkName.isChecked()) {
+            desc = "Name";
+            searchView_bado.setQueryHint("Enter Customer Name");
+        }
+        Log.e(TAG, "onQueryTextSubmit: " + desc);
+        CharSequence key = searchView_bado.getQuery();
 
-       String Key = key.toString();
+        String Key = key.toString();
         dataBaseHelper = new DatabaseHelper(read_Search.this);
 
-        Cursor res = dataBaseHelper.getMeterNumber_RV_where(Key,desc);
+        Cursor res = dataBaseHelper.getMeterNumber_RV_where(Key, desc);
 
-        if(res.moveToFirst()){
+
+        if (res.moveToFirst()) {
             animalNames.clear();
-            do{
+            do {
                 //meterList.add(res.getString(2));
 
-                animalNames.add(res.getString(res.getColumnIndex( "meter_number" )));
-               // animalNames.add(res.getString(res.getColumnIndex("connection_number")));
+                animalNames.add(res.getString(res.getColumnIndex("meter_number")));
+                // animalNames.add(res.getString(res.getColumnIndex("connection_number")));
 /**Changes za 15/08/2019*/
-              // animalNames.add(res.getString(res.getColumnIndex("first_name")));
-             //  animalNames.add(res.getString(res.getColumnIndex("middle_name")));
-            //   animalNames.add(res.getString(res.getColumnIndex("last_name")));
-             //   f_name = res.getString(res.getColumnIndex("first_name"));
-           //     m_name = res.getString(res.getColumnIndex("middle_name"));
-           //     l_name = res.getString(res.getColumnIndex("last_name"));
-           //     Full_name = f_name +" "+ m_name +" "+l_name;
-           // /    animalNames.add(Full_name);
-           //    animalNames.add(res.getString(res.getColumnIndex("work_phone")));
-           //    animalNames.add(res.getString(res.getColumnIndex("bill_area")));
+                // animalNames.add(res.getString(res.getColumnIndex("first_name")));
+                //  animalNames.add(res.getString(res.getColumnIndex("middle_name")));
+                //   animalNames.add(res.getString(res.getColumnIndex("last_name")));
+                //   f_name = res.getString(res.getColumnIndex("first_name"));
+                //     m_name = res.getString(res.getColumnIndex("middle_name"));
+                //     l_name = res.getString(res.getColumnIndex("last_name"));
+                //     Full_name = f_name +" "+ m_name +" "+l_name;
+                // /    animalNames.add(Full_name);
+                //    animalNames.add(res.getString(res.getColumnIndex("work_phone")));
+                //    animalNames.add(res.getString(res.getColumnIndex("bill_area")));
 
                 /**Mwisho*/
 
-            }while (res.moveToNext());
-        }
+            } while (res.moveToNext());
+        } else if (res.moveToFirst() == false) {
+            switch (desc) {
+                case "Connection_Number":
+                    if (Key.length() == 0) {
+                        adapter.notifyDataSetChanged();
+                        dtHelper = new DatabaseHelper(read_Search.this);
+
+                        rs = dtHelper.getMeterNumber_RV();
+
+                        if (rs.moveToFirst()) {
+                            animalNames.clear();
+                            do {
+                                //meterList.add(res.getString(2));
+
+                                animalNames.add(rs.getString(rs.getColumnIndex("meter_number")));
+                                // animalNames.add(res.getString(res.getColumnIndex("connection_number")));
+                            } while (rs.moveToNext());
+                        }
+                    } else if (Key.length() != 6) {
+                        animalNames.clear();
+                        animalNames.add("Account Haipo/Not Valid !!");
+                    }
+                    break;
+                case "Meter_Number":
+                    if (Key.length() == 0) {
+                        adapter.notifyDataSetChanged();
+                        dtHelper = new DatabaseHelper(read_Search.this);
+
+                        rs = dtHelper.getMeterNumber_RV();
+
+                        if (rs.moveToFirst()) {
+                            animalNames.clear();
+                            do {
+                                //meterList.add(res.getString(2));
+
+                                animalNames.add(rs.getString(rs.getColumnIndex("meter_number")));
+                                // animalNames.add(res.getString(res.getColumnIndex("connection_number")));
+                            } while (rs.moveToNext());
+                        }
+                    } else {
+                        animalNames.clear();
+                        animalNames.add("Mita Haipo/Not Valid !!");
+                    }
+                    break;
+                case "Name":
+                    if (Key.length() == 0) {
+                        adapter.notifyDataSetChanged();
+                        dtHelper = new DatabaseHelper(read_Search.this);
+
+                        rs = dtHelper.getMeterNumber_RV();
+
+                        if (rs.moveToFirst()) {
+                            animalNames.clear();
+                            do {
+                                //meterList.add(res.getString(2));
+
+                                animalNames.add(rs.getString(rs.getColumnIndex("meter_number")));
+                                // animalNames.add(res.getString(res.getColumnIndex("connection_number")));
+                            } while (rs.moveToNext());
+                        }
+                    } else {
+                        animalNames.clear();
+                        animalNames.add("Jina Halipo/Not Valid !!");
+                    }
+                    break;
+
+            }
+
+
+    }
 
         try {
             recyclerView.setLayoutManager(new LinearLayoutManager(read_Search.this));
@@ -202,6 +281,7 @@ searchView_bado.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
         return true;
 
     }
+
     public void onCheckboxClicked(View view) {
         // Is the view now checked?
         boolean checked = ((CheckBox) view).isChecked();
@@ -212,26 +292,22 @@ searchView_bado.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
                 if (checked){
                     chkMeterNumber.setChecked(true);
                 }
-                // Put some meat on the sandwich
+
             else
-                // Remove the meat
+
                 break;
             case R.id.chkMeterNumber:
                 if (checked){
 
                 }
-                // Cheese me
+
             else
-                // I'm lactose intolerant
-                break;
+                               break;
             case R.id.chkName:
                 if (checked){}
-                // Cheese me
-                else
-                    // I'm lactose intolerant
-                    break;
-            // TODO: Veggie sandwich
-        }
+                             else
+                                    break;
+                 }
     }
     @Override
     public boolean onQueryTextChange(String newText) {
@@ -244,35 +320,107 @@ searchView_bado.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
         {  desc = "Name";}
         Log.e(TAG, "onQueryTextChange: "+desc );
         CharSequence key =  searchView_bado.getQuery();
-
         String Key = key.toString();
         dataBaseHelper = new DatabaseHelper(read_Search.this);
 
         Cursor res = dataBaseHelper.getMeterNumber_RV_where(Key,desc);
-
         if(res.moveToFirst()){
             animalNames.clear();
             do{
                 //meterList.add(res.getString(2));
 
                 animalNames.add(res.getString(res.getColumnIndex( "meter_number" )));
-               // animalNames.add(res.getString(res.getColumnIndex("connection_number")));
+                // animalNames.add(res.getString(res.getColumnIndex("connection_number")));
 
                 /**Changes za 15/08/2019*/
-              //  animalNames.add(res.getString(res.getColumnIndex("first_name")));
-              //  animalNames.add(res.getString(res.getColumnIndex("middle_name")));
-             //   animalNames.add(res.getString(res.getColumnIndex("last_name")));
-              //  f_name = res.getString(res.getColumnIndex("first_name"));
-             //   m_name = res.getString(res.getColumnIndex("middle_name"));
-             //   l_name = res.getString(res.getColumnIndex("last_name"));
-            //    Full_name = f_name +" "+ m_name +" "+l_name;
-             //   animalNames.add(Full_name);
-             //   animalNames.add(res.getString(res.getColumnIndex("work_phone")));
-             //  animalNames.add(res.getString(res.getColumnIndex("bill_area")));
+                //  animalNames.add(res.getString(res.getColumnIndex("first_name")));
+                //  animalNames.add(res.getString(res.getColumnIndex("middle_name")));
+                //   animalNames.add(res.getString(res.getColumnIndex("last_name")));
+                //  f_name = res.getString(res.getColumnIndex("first_name"));
+                //   m_name = res.getString(res.getColumnIndex("middle_name"));
+                //   l_name = res.getString(res.getColumnIndex("last_name"));
+                //    Full_name = f_name +" "+ m_name +" "+l_name;
+                //   animalNames.add(Full_name);
+                //   animalNames.add(res.getString(res.getColumnIndex("work_phone")));
+                //  animalNames.add(res.getString(res.getColumnIndex("bill_area")));
 
                 /**Mwisho*/
             }while (res.moveToNext());
         }
+
+        else if(res.moveToFirst() == false){
+            switch (desc){
+                case "Connection_Number":
+                    if(Key.length() == 0){
+                        adapter.notifyDataSetChanged();
+                        dtHelper = new DatabaseHelper(read_Search.this);
+
+                        rs = dtHelper.getMeterNumber_RV();
+
+                        if (rs.moveToFirst()) {
+                            animalNames.clear();
+                            do {
+                                //meterList.add(res.getString(2));
+
+                                animalNames.add(rs.getString(rs.getColumnIndex("meter_number")));
+                                // animalNames.add(res.getString(res.getColumnIndex("connection_number")));
+                            } while (rs.moveToNext());
+                        }
+                     }
+                    else if(Key.length() != 6){
+                        animalNames.clear();
+                        animalNames.add("Account Haipo/Not Valid !!");
+                    }
+                    break;
+                case "Meter_Number":
+                    if(Key.length() == 0) {
+                        adapter.notifyDataSetChanged();
+                        dtHelper = new DatabaseHelper(read_Search.this);
+
+                        rs = dtHelper.getMeterNumber_RV();
+
+                        if (rs.moveToFirst()) {
+                            animalNames.clear();
+                            do {
+                                //meterList.add(res.getString(2));
+
+                                animalNames.add(rs.getString(rs.getColumnIndex("meter_number")));
+                                // animalNames.add(res.getString(res.getColumnIndex("connection_number")));
+                            } while (rs.moveToNext());
+                        }
+                    }
+                    else{
+                        animalNames.clear();
+                        animalNames.add("Mita Haipo/Not Valid !!");
+                    }
+                    break;
+                case "Name":
+                    if(Key.length() == 0) {
+                        adapter.notifyDataSetChanged();
+                        dtHelper = new DatabaseHelper(read_Search.this);
+
+                        rs = dtHelper.getMeterNumber_RV();
+
+                        if (rs.moveToFirst()) {
+                            animalNames.clear();
+                            do {
+                                //meterList.add(res.getString(2));
+
+                                animalNames.add(rs.getString(rs.getColumnIndex("meter_number")));
+                                // animalNames.add(res.getString(res.getColumnIndex("connection_number")));
+                            } while (rs.moveToNext());
+                        }
+                    }
+                    else{
+                        animalNames.clear();
+                        animalNames.add("Jina Halipo/Not Valid !!");
+                    }
+                    break;
+
+            }
+
+        }
+
 
         try {
             recyclerView.setLayoutManager(new LinearLayoutManager(read_Search.this));
@@ -282,14 +430,26 @@ searchView_bado.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
 
         }catch (Exception e ){
             Toast.makeText(read_Search.this, "An error While Generating List \n" +e.getMessage() , Toast.LENGTH_SHORT).show();
-
         }
-
         return true;
     }
 });
 
 }
+
+
+        public static boolean isNumeric(String strNum) {
+            if (strNum == null) {
+                return false;
+            }
+            try {
+                double d = Double.parseDouble(strNum);
+            } catch (NumberFormatException nfe) {
+                return false;
+            }
+            return true;
+        }
+
 
     @Override
     public void onItemClick(View view, int position) {
@@ -302,6 +462,7 @@ searchView_bado.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             //  Toast.makeText(this, "You clicked " + adapter.getItem(position) + " on row number " + position, Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(read_Search.this, new_Reading.class);
             intent.putExtra("item", adapter.getItem(position));
+            intent.putExtra("from", "new_Read");
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
             startActivity(intent);
         }

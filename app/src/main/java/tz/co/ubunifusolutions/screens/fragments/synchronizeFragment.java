@@ -1,11 +1,15 @@
 package tz.co.ubunifusolutions.screens.fragments;
 
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
+import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
@@ -15,15 +19,16 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import net.gotev.uploadservice.MultipartUploadRequest;
-import net.gotev.uploadservice.UploadNotificationConfig;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -43,7 +48,10 @@ import java.util.UUID;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
 import okhttp3.RequestBody;
+import okhttp3.Response;
 import tz.co.ubunifusolutions.screens.R;
 import tz.co.ubunifusolutions.screens.api.ApiConfig;
 import tz.co.ubunifusolutions.screens.api.AppConfig;
@@ -52,7 +60,20 @@ import tz.co.ubunifusolutions.screens.api.ServerResponse;
 import tz.co.ubunifusolutions.screens.notification.NotificationHelper;
 import tz.co.ubunifusolutions.screens.session.IpAddress;
 import tz.co.ubunifusolutions.screens.storage.DatabaseHelper;
+import tz.co.ubunifusolutions.screens.utils.FileUtils;
 import tz.co.ubunifusolutions.screens.utils.Filezip;
+
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.ContextWrapper;
+import android.content.Intent;
+import android.graphics.Color;
+import android.os.Build;
+import android.provider.Settings;
+import android.support.v4.app.NotificationCompat;
 
 //import static com.google.android.gms.internal.zzahf.runOnUiThread;
 
@@ -181,130 +202,16 @@ public class synchronizeFragment extends Fragment {
         {
             @Override
             public void onClick(View v) {
-                textView.setText("");
+                new UploadfileTask().execute();
 
-                if (isNetworkIpo()) {
-                    //getreadlog_data();
-                    JSONArray resultSet =  dataBaseHelper.readJSon() ;
-                    JSONObject myobj = new JSONObject();
-                    try {
-                        myobj.put("Read_log", resultSet);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-
-                    /*
-                    Mwanzo wa kutuma data
-                     * Generating File--JSON DATA
-                     */
-
-                    long unixTime = System.currentTimeMillis() / 1000L;
-                    String filename = "json_data-"+unixTime+".json";
-                    File file_path = new File(Environment.getExternalStorageDirectory(),DNAME);
-                    try {
-                        if (!file_path.exists()) {
-                            file_path.mkdirs();
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-
-                    FileReader fileReader = null;
-                    FileWriter fileWriter = null;
-                    BufferedReader bufferedReader = null;
-                    BufferedWriter bufferedWriter = null;
-                    final File file = new File(file_path, filename);
-                    if (!file.exists()) {
-
-                        try {
-                            file.createNewFile();
-                            fileWriter = new FileWriter(file.getAbsoluteFile());
-                            bufferedWriter = new BufferedWriter(fileWriter);
-//                            bufferedWriter.append(myobj.toString());
-                            bufferedWriter.append(resultSet.toString());
-                            // bufferedWriter.write(resultSet.toString());
-                            bufferedWriter.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-
-                       // Log.e(TAG, "getreadlog_data: Json Data - Result set"+resultSet);
-
-                        Log.e(TAG, "getreadlog_data: Location Of JSON - " + file.getAbsoluteFile() );
-
-                    }
-                    // get List of files to upload
-                    // hii ni kwa ajili ya images
-
-                    String path = Environment.getExternalStorageDirectory().toString()+"/"+DNAME;
-                    String path_images =  Environment.getExternalStorageDirectory().toString()+"/"+DNAME+"/Images";
-                    Log.d("Files", "Path: " + path);
-                    File directory = new File(path);
-                    File directory_images = new File(path_images);
-                    File[] files = directory.listFiles();
-                    final File[] files_images = directory_images.listFiles();
-                    Log.d("Files", "Size: "+ files.length);
-
-
-                    Filezip filezip = new Filezip();
-                    String source = path+"/Images";
-//                    if (filezip.zipFileAtPath(source,path)){
-//                        Log.e(TAG, "onClick: Zipping File -- True" );
-//                    }
-//                    else
-//                        Log.e(TAG, "onClick: Zipping file -- False" );
-                    dialog = ProgressDialog.show(getActivity(), "Sending Data", "Uploading file...", true);
-
-                    new Thread(new Runnable() {
-                        public void run() {
-
-                     //   uploadFile(file); //Simple Http
-
-                   //  uploadSingleFile(file);//Retrofit
-
-                            uploadMultipart(file); // using library
-
-                            for (int i = 0; i < files_images.length; i++)
-                            {
-                     //  Log.d("Files", "FileName:" + files_images[i].getName());
-                             //  uploadSingleFile(files_images[i]);
-                             //   uploadFile(files_images[i]);
-                                uploadMultipart(files_images[i]);
-                                Log.i(TAG, "run: File Upload: File - "+ i +" of "+files_images.length);
-//                                if(i == files_images.length){
-//                                    Log.i(TAG, "run: File Upload Completed File  "+ i + " of "+files_images.length);
-//                                }
-                            }
-
-     }
-                    }).start();
-                    //Log.i(TAG, "File Upload completed Files -"+ files_images.length);
-                    dialog.dismiss();
- }
-                else
-                {
-                    customDialog("Network Error","Please check Your Network Settings \n or Allow Data Connection",
-                            "cancelMethod1","okMethod1");
-                    notificationHelper.createNotification("Network Error","Please check Your Network Settings \n or Allow Data Connection");
-
-
-                    dialog.dismiss();
-                }
 
             }
         });
 
         /**
          * Mwisho wa Online Sync*/
-       afterupload();
-        //notificationHelper.createNotification("Data Synchronizing","Data Synchronizing Completed Successful");
 
         return view;
-    }
-
-    private void afterupload() {
-//        dialog.dismiss();
-
     }
 
     /*
@@ -337,9 +244,7 @@ public class synchronizeFragment extends Fragment {
         String BASE_URL = "http://"+LocalIPAddress+"/upload/upload.php/";
         Log.e(TAG, "uploadFile: "+ LocalIPAddress );
 
-        //getting the actual path of the image
-     //   String path = getPath(filePath);
-        String path = file.getAbsolutePath();
+       String path = file.getAbsolutePath();
 
         //Uploading code
         try {
@@ -354,9 +259,7 @@ public class synchronizeFragment extends Fragment {
                     .setMaxRetries(2)
                     .startUpload(); //Starting the upload
 
-
-
-        } catch (Exception exc) {
+  } catch (Exception exc) {
             Toast.makeText(getActivity(), exc.getMessage(), Toast.LENGTH_SHORT).show();
 
         }
@@ -375,6 +278,19 @@ public class synchronizeFragment extends Fragment {
         if (info == null) return false;
         NetworkInfo.State network = info.getState();
         return (network == NetworkInfo.State.CONNECTED || network == NetworkInfo.State.CONNECTING);
+    }
+
+    public int uploadSpeed(){
+        ConnectivityManager cm = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        //should check null because in airplane mode it will be null
+        NetworkCapabilities nc = null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            nc = cm.getNetworkCapabilities(cm.getActiveNetwork());
+        }
+        int downSpeed = nc.getLinkDownstreamBandwidthKbps();
+        int upSpeed = nc.getLinkUpstreamBandwidthKbps();
+        return upSpeed;
     }
 
     public void uploadFile(File file)
@@ -465,7 +381,90 @@ public class synchronizeFragment extends Fragment {
         });
     }
 
-     private class getAllConnections extends AsyncTask<Void, Void, Void>
+    public String OKHTTP_Upload(File file){
+        String LocalIPAddress = null;
+        String PublicIPAddress = null;
+        final String[] jibu = { null };
+        Cursor res = dataBaseHelper.getSettings_All();
+        StringBuffer stringBuffer = new StringBuffer();
+        if (res != null && res.getCount() > 0) {
+            while (res.moveToNext()) {
+                stringBuffer.append("Local_IP_Address" + res.getString(res.getColumnIndex("ip_local")) + "\n");
+                LocalIPAddress = res.getString(res.getColumnIndex("ip_local"));
+                stringBuffer.append("Public_IP_Address" + res.getString(res.getColumnIndex("ip_public")) + "\n");
+                PublicIPAddress = res.getString(res.getColumnIndex("ip_public"));
+            }
+            // txtResult.setText(stringBuffer.toString());
+        }
+        String aa = ip.getLocalIP();
+        String BASE_URL = "http://"+LocalIPAddress+"/upload/upload.php/";
+        Log.e(TAG, "uploadFile: "+ LocalIPAddress );
+
+        Thread upload = new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+
+                Uri uri = Uri.fromFile(file);
+                ContentResolver cR = getContext().getContentResolver();
+                MimeTypeMap mime = MimeTypeMap.getSingleton();
+                String mimeType = cR.getType(Uri.parse(String.valueOf(new File(file.getPath()))));
+                String file_path = file.getAbsolutePath();
+                //String content_type = getMimeType(uri);
+               // String content_type= mime.getExtensionFromMimeType(cR.getType(uri));
+                Log.d(TAG, "run: Absolute path "+ file.getAbsolutePath());
+                Log.d(TAG, "run: Canonicals PAth "+ file.getPath());
+                Log.d(TAG, "run: filename " +file_path.substring(file_path.lastIndexOf(".")+1));
+                Log.d(TAG, "run: File type " + mimeType);
+
+                OkHttpClient client = new OkHttpClient();
+                RequestBody file_body = RequestBody.create(MediaType.parse("*/*"), file);
+               // RequestBody file_body = RequestBody.create(MediaType.parse(content_type),file.getPath());
+                RequestBody requestBody = new MultipartBody.Builder()
+                        .setType(MultipartBody.FORM)
+                       // .addFormDataPart("type",mimeType)
+                        .addFormDataPart("file",file_path.substring(file_path.lastIndexOf("/")+1),file_body)
+                        .build();
+                Request request = new Request.Builder()
+                        .url(BASE_URL)
+                        .post(requestBody)
+
+                        .build();
+                try {
+                    Response response = client.newCall(request).execute();
+                    if(response.isSuccessful() == true){
+                        jibu[0] = "Success";
+                        response.body().close();
+                    }
+                    else
+                    {
+                        jibu[0] = "Failure";
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+
+            }
+        });
+        upload.start();
+
+        return jibu[0];
+    }
+
+    private String getMimeType(String path) {
+//        String extension = MimeTypeMap.getFileExtensionFromUrl(String.valueOf(path));
+//        return MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+        String type = null;
+        String extension = MimeTypeMap.getFileExtensionFromUrl(path);
+        if (extension != null) {
+            type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+        }
+        return type;
+
+    }
+
+    private class getAllConnections extends AsyncTask<Void, Void, Void>
     {
 
         @Override
@@ -781,7 +780,6 @@ public class synchronizeFragment extends Fragment {
 
             // Making a request to url and getting response
             // All Customers comes from connection Table
-
             String url_Customer = " http://" + LocalIP + "/api_sql_run1/public/customerdetails";
             String jsonStr_Customers = sh_Customers.makeServiceCall(url_Customer);
             Log.e(TAG, "Response from url: " + jsonStr_Customers);
@@ -874,6 +872,28 @@ public class synchronizeFragment extends Fragment {
 
             textView.setText("Please Wait \n Downloading Data \n Customer Connections Done \n Area Details Done \n Done Getting All Customers Details \n Data Synchronizing Completed Successful ");
 
+            textView.setText("Please Wait \n Downloading Data \n Customer Connections Done \n Area Details Done \n Done Getting All Customers Details \n Data Synchronizing Completed Successful  \n Attempting to delete Images");
+
+            dataBaseHelper.ondoaPicha();
+            // delete na picha za kwenye file also
+            File imagesFolder = new File(Environment.getExternalStorageDirectory(), DNAME + "/Images");
+            Log.e(TAG, "onPostExecute: Path ya picha zote"+imagesFolder );
+            File file_path = new File(Environment.getExternalStorageDirectory(), DNAME);
+            Log.e(TAG, "onPostExecute: Path ya Json zote"+file_path );
+//            imagesFolder.mkdirs();
+           deleteRecursive(imagesFolder);
+           deleteRecursive(file_path);
+
+            try {
+                if (!file_path.exists()) {
+                    file_path.mkdirs();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            dataBaseHelper.ondoaUsomaji();
+
             progressBar.setVisibility(View.GONE);
 
             textView6.setVisibility(View.GONE);
@@ -883,6 +903,233 @@ public class synchronizeFragment extends Fragment {
 
         }
 
+    }
+
+    @SuppressLint("StaticFieldLeak")
+    private class UploadfileTask extends AsyncTask<Void, Integer, Void> {
+
+        private ProgressDialog nDialog;
+
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            nDialog = new ProgressDialog(getActivity());
+            nDialog.setMessage("Loading..");
+            nDialog.setTitle("Uploading");
+            nDialog.setIndeterminate(true);
+
+            //nDialog.setCancelable(true);
+//            nDialog.show();
+            try {
+                Thread.sleep(1500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+        }
+
+        protected void onProgressUpdate(Integer... progress) {
+            nDialog.setMessage("Uploading Image: " + progress[0]);
+            try {
+                Thread.sleep(2500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        @Override
+        protected Void doInBackground(Void... voids) {
+//            textView.setText("");
+            /*
+             * Get Data From Database read kwa ku-upload*/
+            if (isNetworkIpo()) {
+
+                JSONArray resultSet = dataBaseHelper.readJSon();
+                JSONObject myobj = new JSONObject();
+                try {
+                    myobj.put("Read_log", resultSet);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                    /*
+                    Mwanzo wa kutuma data
+                     * Generating File--JSON DATA
+                     */
+
+                long unixTime = System.currentTimeMillis() / 1000L;
+                String filename = "json_data-" + unixTime + ".json";
+                File file_path = new File(Environment.getExternalStorageDirectory(), DNAME);
+                try {
+                    if (!file_path.exists()) {
+                        file_path.mkdirs();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                FileReader fileReader = null;
+                FileWriter fileWriter = null;
+                BufferedReader bufferedReader = null;
+                BufferedWriter bufferedWriter = null;
+                final File file = new File(file_path, filename);
+                if (!file.exists()) {
+
+                    try {
+                        file.createNewFile();
+                        fileWriter = new FileWriter(file.getAbsoluteFile());
+                        bufferedWriter = new BufferedWriter(fileWriter);
+//                            bufferedWriter.append(myobj.toString());
+                        bufferedWriter.append(resultSet.toString());
+                        // bufferedWriter.write(resultSet.toString());
+                        bufferedWriter.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    // Log.e(TAG, "getreadlog_data: Json Data - Result set"+resultSet);
+
+                    Log.e(TAG, "getreadlog_data: Location Of JSON - " + file.getAbsoluteFile());
+
+                }
+                // get List of files to upload
+                // hii ni kwa ajili ya images
+
+                String path = Environment.getExternalStorageDirectory().toString() + "/" + DNAME;
+                String path_images = Environment.getExternalStorageDirectory().toString() + "/" + DNAME + "/Images";
+                Log.d("Files", "Path: " + path);
+                File directory = new File(path);
+                File directory_images = new File(path_images);
+                File[] files = directory.listFiles();
+                final File[] files_images = directory_images.listFiles();
+                Log.d("Files", "Size: " + files.length);
+
+
+                Filezip filezip = new Filezip();
+                String source = path + "/Images";
+
+                final int[] jj = {0};
+                try {
+
+                    String jibu_upload = null;//= OKHTTP_Upload(file);
+                    jibu_upload = "Success";
+                    if(jibu_upload == "Success")
+                    {
+                        for (int i = 0; i < files_images.length; i++) {
+
+                            jj[0] = (int) (jj[0] + files_images[i].length());
+                        }
+
+                        jj[0] = (int) (jj[0] + file.length());
+
+                        final int kk = files_images.length;
+
+                        for (int i = 1; i <= files_images.length; i++) {
+                              Log.d("Files", "FileName:" + files_images[i].getName());
+                            //  uploadSingleFile(files_images[i]);
+                            //   uploadFile(files_images[i]);
+                           // nDialog.setMessage("Uploading Image: " + i + " of " + files_images.length);
+                            notificationHelper.uploadnotifiaction("File Uploading","Upload in Progress",i,kk);
+                            //  notificationHelper.createNotification("File Uploading","Upload in Progress");
+                            Thread.sleep(15000);
+                            String jibu_upload1 = OKHTTP_Upload(files_images[i]);
+                           // uploadMultipart(files_images[i]);
+                            Log.i(TAG, "run: File Upload: File - " + i + " of " + files_images.length);
+
+                            if(jibu_upload1 == "Failure"){
+
+                                notificationHelper.createNotification("Upload Failure","Failed to upload file");
+                               // isCancelled();
+                            }
+
+                        }
+                        notificationHelper.createNotification("Success","Upload Completed");
+                    }
+                    else{
+                       // isCancelled();
+                        notificationHelper.createNotification("Upload Failure","Failed to upload file");
+                    }
+
+                   // uploadMultipart(file); // using library
+//                    nDialog.setMessage("Uploading Data .  ");
+//                    Thread.sleep(2500);
+
+
+//                    for (int i = 0; i < files_images.length; i++) {
+//
+//                        jj[0] = (int) (jj[0] + files_images[i].length());
+//                    }
+
+//                    jj[0] = (int) (jj[0] + file.length());
+
+//                   final int kk = files_images.length;
+
+//                    for (int i = 1; i <= files_images.length; i++) {
+//                        //  Log.d("Files", "FileName:" + files_images[i].getName());
+//                        //  uploadSingleFile(files_images[i]);
+//                        //   uploadFile(files_images[i]);
+//                        nDialog.setMessage("Uploading Image: " + i + " of " + files_images.length);
+//                        notificationHelper.uploadnotifiaction("File Uploading","Upload in Progress",i,kk);
+//                      //  notificationHelper.createNotification("File Uploading","Upload in Progress");
+//                        Thread.sleep(30000);
+//                        uploadMultipart(files_images[i]);
+//                        Log.i(TAG, "run: File Upload: File - " + i + " of " + files_images.length);
+//
+//
+//                    }
+                } catch (Exception e) {
+                    //customDialog("Upload Failed"," "+ e,
+                    //       "cancelMethod1","okMethod1");
+                    notificationHelper.createNotification("Upload Failed", "Please Try again");
+                    nDialog.dismiss();
+
+                }
+                int uploadtime, netspeed, filesize = 0;
+                int kilobytes = (jj[0] / 1024);
+                int megabytes = (kilobytes / 1024);
+              //  netspeed = uploadSpeed();
+                // uploadtime = megabytes/netspeed;
+                //   Log.d(TAG, " Upload time :::"  + uploadtime);
+                Log.d(TAG, " Megabyte :::" + megabytes);
+             //   Log.d(TAG, " netspeed :::" + netspeed);
+//                nDialog.setMessage("Uploading Complete: Total Files " + (files_images.length +1) + " Of " +megabytes + " MB");
+
+                notificationHelper.createNotification("Success","Upload Completed");
+
+
+                try {
+                    Thread.sleep(1500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+            }
+            else
+            {
+                //customDialog("Network Error","Please check Your Network Settings \n or Allow Data Connection",
+                //       "cancelMethod1","okMethod1");
+                notificationHelper.createNotification("Network Error","Please check Your Network Settings \n or Allow Data Connection");
+
+                nDialog.dismiss();
+
+               // dialog.dismiss();
+            }
+
+            return null;
+        }
+        @Override
+        protected void onPostExecute(Void result)
+        {
+
+ try {
+                Thread.sleep(60000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            nDialog.dismiss();
+
+        }
     }
 
     public void customDialog(String title,String message,final String cancelMethod,final String okMethod)
@@ -930,5 +1177,25 @@ public class synchronizeFragment extends Fragment {
 
         return;
     }
+    public void deleteRecursive(File fileOrDirectory) {
+
+        try {
+
+            if (fileOrDirectory.isDirectory()) {
+                for (File child : fileOrDirectory.listFiles()) {
+                    deleteRecursive(child);
+                }
+            }
+
+            //Hii inafuta na directory
+
+            fileOrDirectory.delete();
+        }
+        catch (Exception e)
+        {
+            Toast.makeText(getContext(), "Please Check All App Permissions and try Again", Toast.LENGTH_LONG).show();
+        }
+    }
+
 
 }
