@@ -157,6 +157,37 @@ public class DatabaseHelper extends SQLiteOpenHelper {
  //   private static final String COLUMN_SEQ_R = "seq";
 
 
+    // TABLE SETTINGS
+    private static final String KEY_ID_S = "id";
+    private static final String TABLE_NAME_SETTINGS = "tbl_settings";
+    private static final String TABLE_NAME_SETTINGS_TMP = "tbl_settings_tmp";
+    private static final String COLUMN_IP_LOCAL = "ip_local";
+    private static final String COLUMN_IP_PUBLIC = "ip_public";
+
+    // TABLE LOGIN
+    private static final  String TABLE_LOGIN = "login";
+    private static final  String COLUMN_LOGIN_ID = "id";
+    private static final  String COLUMN_LOGIN_NAME = "username";
+    private static final  String COLUMN_LOGIN_TIME = "timestamp";
+    private static final  String COLUMN_LOGIN_STATUS = "status";
+
+    // TABLE AREAS
+    private static final String KEY_ID_SALES = "id";
+    private static final String TABLE_NAME_SALES = "sales_assistants";
+    private static final String COLUMN_SALES_ASSISTANT_NAME = "sales_assistant_name";
+    private static final String COLUMN_SALES_ASSISTANT_IDS = "sales_assistant_ids";
+    private static final String COLUMN_SALES_ASSISTANT_ID = "sales_assistant_id";
+    private static final String COLUMN_SALES_ASSISTANT_TECHNICIAN = "technician";
+    private static final String COLUMN_SALES_ASSISTANT_ENGINEER = "engineer";
+    private static final String COLUMN_SALES_ASSISTANT_SALESASSISTANT = "sales_assistant";
+    private static final String COLUMN_SALES_ASSISTANT_REGULAR= "regular";
+
+    // TABLE PICHA
+    private static final String KEY_ID_P = "id";
+    private static final String TABLE_NAME_PICHA = "tbl_images";
+    private static final String COLUMN_NAME = "name";
+    private static final String COLUMN_PATH = "path";
+
 
     // TABLE READING
     private static final String TABLE_NAME_NEW_READING = "tbl_new_reading";
@@ -229,12 +260,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             "  " + COLUMN_UPDATED_BY_A + " varchar(200) \n" +
             ");";
 
+    //CREATE AREA TABLE
 
-    // TABLE PICHA
-    private static final String KEY_ID_P = "id";
-    private static final String TABLE_NAME_PICHA = "tbl_images";
-    private static final String COLUMN_NAME = "name";
-    private static final String COLUMN_PATH = "path";
+    String sql_create_tbl_sales_assistants = "CREATE TABLE " + TABLE_NAME_SALES + " (\n" +
+            "  " + KEY_ID_SALES + " INTEGER PRIMARY KEY AUTOINCREMENT,\n" +
+            "  " + COLUMN_SALES_ASSISTANT_ID + " varchar(200) ,\n" +
+            "  " + COLUMN_SALES_ASSISTANT_NAME + " varchar(200) ,\n" +
+            "  " + COLUMN_SALES_ASSISTANT_IDS + " varchar(200) ,\n" +
+            "  " + COLUMN_SALES_ASSISTANT_TECHNICIAN + " varchar(200) ,\n" +
+            "  " + COLUMN_SALES_ASSISTANT_ENGINEER + " varchar(200) ,\n" +
+            "  " + COLUMN_SALES_ASSISTANT_SALESASSISTANT + " varchar(200)  ,\n" +
+            "  " + COLUMN_SALES_ASSISTANT_REGULAR + " varchar(200) \n" +
+            ");";
+
+
+
 
     //CREATE PICHA TABLE
 
@@ -316,19 +356,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             ") ";
 
 
-    // TABLE SETTINGS
-    private static final String KEY_ID_S = "id";
-    private static final String TABLE_NAME_SETTINGS = "tbl_settings";
-    private static final String TABLE_NAME_SETTINGS_TMP = "tbl_settings_tmp";
-    private static final String COLUMN_IP_LOCAL = "ip_local";
-    private static final String COLUMN_IP_PUBLIC = "ip_public";
-
-    // TABLE LOGIN
-    private static final  String TABLE_LOGIN = "login";
-    private static final  String COLUMN_LOGIN_ID = "id";
-    private static final  String COLUMN_LOGIN_NAME = "username";
-    private static final  String COLUMN_LOGIN_TIME = "timestamp";
-    private static final  String COLUMN_LOGIN_STATUS = "status";
 
     //CREATE PICHA TABLE
 
@@ -362,8 +389,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db)
     {
 
-
-
         db.execSQL(sql_create_tbl_connection);
         Log.i(TAG, "Tables Created" + TABLE_NAME_CONNECTION);
         db.execSQL(sql_create_tbl_areas);
@@ -378,10 +403,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Log.i(TAG, "Tables Created" + TABLE_NAME_SETTINGS);
         db.execSQL(sql_create_tbl_customer);
         Log.i(TAG, "Tables Created" + TABLE_NAME_CUSTOMER);
-      //  db.execSQL(sql_create_tbl_fault);
-      //  Log.i(TAG,"Tables Created" + TABLE_NAME_FAULT); cheki hii baadae
+        db.execSQL(sql_create_tbl_fault);
+        Log.i(TAG,"Tables Created" + TABLE_NAME_FAULT);
         db.execSQL(sql_createLogin);
         Log.i(TAG,"Tables Created "+TABLE_LOGIN);
+        db.execSQL(sql_create_tbl_sales_assistants);
+        Log.i(TAG,"Tables Created "+TABLE_NAME_SALES);
 
         Log.i(TAG, "Tables Created");
         // System.exit(0);
@@ -401,6 +428,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME_SETTINGS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME_PICHA);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME_CUSTOMER);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME_SALES);
+
 
 
         // db.execSQL("DROP TABLE IF EXISTS "+TABLE_NAME_CUSTOMERS);
@@ -965,7 +994,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public Cursor getMeterNumber_RV()
     {
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor res = db.rawQuery("Select "+ COLUMN_METER_NUMBER +","+COLUMN_CONNECTION_NUMBER+ " FROM " + TABLE_NAME_CONNECTION +" ORDER BY "+COLUMN_METER_NUMBER +" LIMIT "+ 20, null);
+        Cursor res = db.rawQuery("Select "+ COLUMN_METER_NUMBER +","+COLUMN_CONNECTION_NUMBER+ " FROM " + TABLE_NAME_CONNECTION +" ORDER BY "+COLUMN_METER_NUMBER +" LIMIT "+ 100, null);
       /*  Cursor res1 = db.rawQuery("Select cu." +COLUMN_FIRST_NAME+", cu."+COLUMN_MIDDLE_NAME+", cu."+COLUMN_LAST_NAME+", cu."+COLUMN_BILL_AREA+
                ", con."+COLUMN_METER_NUMBER+" FROM " + TABLE_NAME_CUSTOMER+" cu LEFT JOIN "+ TABLE_NAME_CONNECTION+" con",null);
         System.out.println("Select cu." +COLUMN_FIRST_NAME+", cu."+COLUMN_MIDDLE_NAME+", cu."+COLUMN_LAST_NAME+", cu."+COLUMN_BILL_AREA+
@@ -1329,4 +1358,37 @@ return res_customer;
 //TABLE_NAME_READ_LOG
     }
 
+    public boolean insertSalesAssistant(String sales_assistant_id, String sales_assistant_name, String sales_assistant_ids, String technician, String engineer, String sales_assistant, String regular) {
+
+        SQLiteDatabase sqLiteDatabase_salesAssistant = getWritableDatabase();
+        long flag1 = 0;
+        try {
+
+            sqLiteDatabase_salesAssistant.beginTransaction();
+            ContentValues cv_salesAssistant = new ContentValues();
+            cv_salesAssistant.put(COLUMN_SALES_ASSISTANT_ID, sales_assistant_id);
+            cv_salesAssistant.put(COLUMN_SALES_ASSISTANT_NAME, sales_assistant_name);
+            cv_salesAssistant.put(COLUMN_SALES_ASSISTANT_IDS, sales_assistant_ids);
+            cv_salesAssistant.put(COLUMN_SALES_ASSISTANT_TECHNICIAN, technician);
+            cv_salesAssistant.put(COLUMN_SALES_ASSISTANT_ENGINEER, engineer);
+            cv_salesAssistant.put(COLUMN_SALES_ASSISTANT_SALESASSISTANT, sales_assistant);
+            cv_salesAssistant.put(COLUMN_SALES_ASSISTANT_REGULAR, regular);
+            flag1 = sqLiteDatabase_salesAssistant.insert(TABLE_NAME_SALES, null, cv_salesAssistant);
+            sqLiteDatabase_salesAssistant.setTransactionSuccessful();
+            Log.i(TAG, "Done" + TABLE_NAME_SALES);
+
+        } catch (Exception e) {
+            Log.e(TAG, "An Error Has Occurred" + e.getMessage());
+        } finally {
+            sqLiteDatabase_salesAssistant.endTransaction();
+        }
+        if (flag1 == -1) {
+            Log.i(TAG, "Failed to Add Sales Assistant");
+            return false;
+        } else {
+            Log.i(TAG, "Add Sales Assistant was successful");
+            return true;
+        }
+
+    }
 }

@@ -36,4 +36,11 @@
         <item name="colorControlNormal">@color/grey_40</item>
     </style>
 
+    <style name="BottomSheetDialogTheme" parent="Theme.Design.Light">
+        <item name="bottomSheetStyle">@style/BottomSheetStyle </item>
+    </style>
+
+    <style name="BottomSheetStyle" parent="Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@android:color/transparent</item>
+    </style>
 </resources>

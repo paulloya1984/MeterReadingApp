@@ -95,7 +95,7 @@ public class synchronizeFragment extends Fragment {
 
     NotificationHelper notificationHelper;
     DatabaseHelper dataBaseHelper,databaseHelper1;
-    public ArrayList<HashMap<String, String>> CustomerList, AreaList,ReadlogBuffer;
+    public ArrayList<HashMap<String, String>> CustomerList, AreaList,ReadlogBuffer,salsesAssistantList;
 
     int serverResponseCode = 0;
     ProgressDialog dialog = null;
@@ -202,6 +202,7 @@ public class synchronizeFragment extends Fragment {
         {
             @Override
             public void onClick(View v) {
+                Toast.makeText(cntx, "KUbumka ku-update flags ya upload", Toast.LENGTH_SHORT).show();
                 new UploadfileTask().execute();
 
 
@@ -758,6 +759,116 @@ public class synchronizeFragment extends Fragment {
 
         }
     }
+
+    private class getAllSalesAsstant extends AsyncTask<Void, Void, Void>
+    {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            Toast.makeText(getActivity(), "Json Sales Assistant Data is downloading", Toast.LENGTH_LONG).show();
+            Log.i(TAG, "Json Sales Assistant Data Downloading -- All Sales Assistant");
+            progressBar.setProgress(40);
+            textView.setText("Please Wait \n Downloading Data \n Customer Connections Done ....\n Area Data Downloading \n Sales Assistant Data Downloading-- All Areas");
+        }
+
+        @Override
+        protected Void doInBackground(Void... arg0)
+        {
+
+/**
+ * * All Sales Assistant
+ * */
+            HttpHandler sh_SalesAssistant = new HttpHandler();
+
+            /*
+             * All Area from Areas Table
+             * */
+
+            // String All_allArea_URL = "http://192.168.43.116/server/public/allareas";
+            // http://localhost:8080/api_sql_run1/public/salesassist
+            String All_allSales_URL = " http://" + LocalIP + "/api_sql_run1/public/salesassist";
+
+            String jsonStr_SalesAssistant = sh_SalesAssistant.makeServiceCall(All_allSales_URL);
+            Log.e(TAG, "Response from url: " + jsonStr_SalesAssistant);
+            //  Toast.makeText(sync.this, "Response from url: " + jsonStr, Toast.LENGTH_SHORT).show();
+            if (jsonStr_SalesAssistant != null) {
+                dataBaseHelper = new DatabaseHelper(getActivity());
+                dataBaseHelper.ondoaArea();
+                progressBar2.setProgress(0);
+
+                try {
+                    JSONObject jsonObj_Area = new JSONObject(jsonStr_SalesAssistant);
+
+                    // Getting JSON Array node
+                    ///
+                    JSONArray SalesAssistantJArray = jsonObj_Area.getJSONArray("salesAssistant");
+
+                    int le =SalesAssistantJArray.length();
+                    progressBar2.setMax(le);
+                    for (int i = 0; i < SalesAssistantJArray.length(); i++) {
+                        progressBar2.setProgress(i);
+                        JSONObject c = SalesAssistantJArray.getJSONObject(i);
+                        String sales_assistant_id = c.getString("sales_assistant_id");
+                        String sales_assistant_name = c.getString("sales_assistant_name");
+                        String sales_assistant_ids = c.getString("sales_assistant_ids");
+                        String technician = c.getString("technician");
+                        String engineer = c.getString("engineer");
+                        String sales_assistant = c.getString("sales_assistant");
+                        String regular = c.getString("regular");
+
+
+                        // tmp hash map for single area
+                        HashMap<String, String> salesAssistantListHash = new HashMap<>();
+
+                        // adding each child node to HashMap key => value
+                        salesAssistantListHash.put("sales_assistant_id", sales_assistant_id);
+                        salesAssistantListHash.put("sales_assistant_name", sales_assistant_name);
+                        salesAssistantListHash.put("sales_assistant_ids", sales_assistant_ids);
+                        salesAssistantListHash.put("technician", technician);
+                        salesAssistantListHash.put("engineer", engineer);
+                        salesAssistantListHash.put("sales_assistant", sales_assistant);
+                        salesAssistantListHash.put("regular", regular);
+                        salsesAssistantList.add(salesAssistantListHash);
+                        dataBaseHelper = new DatabaseHelper(getActivity());
+                        if (dataBaseHelper.insertSalesAssistant(sales_assistant_id, sales_assistant_name, sales_assistant_ids, technician, engineer, sales_assistant,regular)) {
+
+                            Log.i(TAG, "Sales Assistant  " + sales_assistant_name + " Synced Successful, Total " + i);
+
+                        } else {
+                            Log.e(TAG, "All Sales Assistant Error at " + i);
+
+                        }
+                    }
+                } catch (final JSONException e) {
+                    Log.e(TAG, "Json parsing error: " + e.getMessage());
+                    String msg = "Json parsing error: " + e.getMessage();
+                    notificationHelper.createNotification("Data Synchronizing Error", "Json parsing error: " + e.getMessage());
+                    cancel(true);
+                }
+
+            } else {
+                Log.e(TAG, "Couldn't get json from server.");
+                String msg = "Couldn't get json from server.";
+                notificationHelper.createNotification("Data Synchronizing Error","Couldn't get Data from Server, Please Check if server can be reached");
+                cancel(true);
+            }
+            progressBar.setProgress(70);
+            Log.i(TAG, "Done Loading Area.");
+            dataBaseHelper.close();
+            /**
+             * All Areas mwisho hapa*/
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            super.onPostExecute(result);
+            textView.setText("Please Wait \n Downloading Data \n Customer Connections Done ....\n Area Data Downloading -- All Areas\n Details Done .... ");
+
+
+        }
+    }
+
 
     private class getAllCustomers extends AsyncTask<Void, Void, Void>
     {

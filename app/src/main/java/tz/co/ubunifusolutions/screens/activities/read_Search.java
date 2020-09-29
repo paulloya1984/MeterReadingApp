@@ -1,5 +1,6 @@
 package tz.co.ubunifusolutions.screens.activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.support.v7.app.AppCompatActivity;
@@ -18,6 +19,11 @@ import java.util.List;
 
 import tz.co.ubunifusolutions.screens.R;
 import tz.co.ubunifusolutions.screens.activities.adapters1.readSearch_Adapter;
+import tz.co.ubunifusolutions.screens.activities.wateja.waliosomewa;
+import tz.co.ubunifusolutions.screens.adaptors.Badosomewa_Adaptor1;
+import tz.co.ubunifusolutions.screens.models.Badosomewa_Model1;
+
+import tz.co.ubunifusolutions.screens.models.Waliosomewa_Model1;
 import tz.co.ubunifusolutions.screens.storage.DatabaseHelper;
 import tz.co.ubunifusolutions.screens.storage.DatabaseHelper_node;
 
@@ -28,7 +34,9 @@ public class read_Search extends AppCompatActivity implements readSearch_Adapter
     private List<String> meterList;
     DatabaseHelper dataBaseHelper,dtHelper;
     ArrayList<String> animalNames;
-    ArrayList<String> jinaLaMteja;
+//    ArrayList<String> jinaLaMteja;
+
+    List<Badosomewa_Model1> badosomewa_model1List;
     RecyclerView recyclerView;
     CheckBox chkConnNumber,chkMeterNumber,chkName;
 
@@ -36,12 +44,14 @@ public class read_Search extends AppCompatActivity implements readSearch_Adapter
     String f_name,m_name,l_name;
     Cursor res,res_name,rs;
     private static final String TAG = "From Read Search class";
+    private static Context mContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_read_search);
+        dataBaseHelper = new DatabaseHelper(read_Search.this);
         searchView_bado= (SearchView) findViewById(R.id.idsearch_read);
         chkConnNumber = (CheckBox) findViewById(R.id.chkConnNumber);
         chkConnNumber.setOnClickListener(new View.OnClickListener() {
@@ -67,7 +77,6 @@ public class read_Search extends AppCompatActivity implements readSearch_Adapter
                 }
             }
         });
-
         chkName = (CheckBox) findViewById(R.id.chkName);
         chkName.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -81,78 +90,32 @@ public class read_Search extends AppCompatActivity implements readSearch_Adapter
         });
 
         chkMeterNumber.setChecked(true);
+        read_Search.mContext = getApplicationContext();
 
-       // boolean checked = ((CheckBox) view).isChecked();
-
-        // data to populate the RecyclerView with
+ // data to populate the RecyclerView with
         animalNames = new ArrayList<>();
-       // jinaLaMteja = new ArrayList<>();
 
         animalNames.add("Synchronise Data");
-       // jinaLaMteja.add("Synchronise Data");
-
-
-
-
+      
         // set up the RecyclerView
 
         recyclerView = findViewById(R.id.rvAnimals);
 
-        dataBaseHelper = new DatabaseHelper(read_Search.this);
+        initData();
+        setRecyclerView();
 
-        res = dataBaseHelper.getMeterNumber_RV();
-        res_name = dataBaseHelper.getName_RV();
-       if(res.moveToFirst()){
-            animalNames.clear();
-            do{
-                //meterList.add(res.getString(2));
 
-                animalNames.add(res.getString(res.getColumnIndex( "meter_number" )));
-               // animalNames.add(res.getString(res.getColumnIndex("connection_number")));
-            }while (res.moveToNext());
 
-        }
-
-       //if(res_name !=null && res_name.getCount()>0)
-        if(res_name.moveToFirst()){
-            do{
-                 f_name = res_name.getString(res_name.getColumnIndex("first_name"));
-               // Toast.makeText(read_Search.this, f_name , Toast.LENGTH_SHORT).show();
-                 m_name = res_name.getString(res_name.getColumnIndex("middle_name"));
-                 l_name = res_name.getString(res_name.getColumnIndex("last_name"));
-                Full_name = f_name + " " + m_name + " " +l_name;
-                //Log.i(TAG,Full_name);
-           //     animalNames.add(Full_name);
-            } while(res_name.moveToNext());
-        }
-//        for (int i = 0; i < animalNames.size(); i++) {
-//           Log.i(TAG,animalNames.get(i));
-//        }
-        res.close();
-        res_name.close();
-try {
-    recyclerView.setLayoutManager(new LinearLayoutManager(this));
-    adapter = new readSearch_Adapter(this, animalNames);
-  //  adapter = new readSearch_Adapter(this,jinaLaMteja);
-
-    adapter.setClickListener(this);
-    recyclerView.setAdapter(adapter);
-
-}catch (Exception e ){
-    Toast.makeText(this, "An error While Generating List \n" +e.getMessage() , Toast.LENGTH_SHORT).show();
-//    recyclerView.setLayoutManager(new LinearLayoutManager(this));
-//    adapter = new readSearch_Adapter(this, animalNames);
-//    adapter.setClickListener(this);
-//    recyclerView.setAdapter(adapter);
-}
- /*
- * Mwisho wa setting up Recycler view*/
+        //search view
+        
 
 searchView_bado.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
 
-
     @Override
     public boolean onQueryTextSubmit(String query) {
+        String meter_Number = "", connection_Number = "",   customer_Name ="";
+        badosomewa_model1List = new ArrayList<>();
+
         String desc = "";
         if (chkConnNumber.isChecked()) {
             desc = "Connection_Number";
@@ -161,40 +124,33 @@ searchView_bado.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
         } else if (chkMeterNumber.isChecked()) {
             desc = "Meter_Number";
             searchView_bado.setQueryHint("Enter Valid Meter Number");
+
         } else if (chkName.isChecked()) {
             desc = "Name";
             searchView_bado.setQueryHint("Enter Customer Name");
         }
-        Log.e(TAG, "onQueryTextSubmit: " + desc);
+      //  Log.e(TAG, "onQueryTextSubmit: " + desc);
         CharSequence key = searchView_bado.getQuery();
-
         String Key = key.toString();
-        dataBaseHelper = new DatabaseHelper(read_Search.this);
 
+        dataBaseHelper = new DatabaseHelper(read_Search.this);
         Cursor res = dataBaseHelper.getMeterNumber_RV_where(Key, desc);
 
-
         if (res.moveToFirst()) {
-            animalNames.clear();
+            badosomewa_model1List.clear();
             do {
-                //meterList.add(res.getString(2));
-
-                animalNames.add(res.getString(res.getColumnIndex("meter_number")));
-                // animalNames.add(res.getString(res.getColumnIndex("connection_number")));
-/**Changes za 15/08/2019*/
-                // animalNames.add(res.getString(res.getColumnIndex("first_name")));
-                //  animalNames.add(res.getString(res.getColumnIndex("middle_name")));
-                //   animalNames.add(res.getString(res.getColumnIndex("last_name")));
-                //   f_name = res.getString(res.getColumnIndex("first_name"));
-                //     m_name = res.getString(res.getColumnIndex("middle_name"));
-                //     l_name = res.getString(res.getColumnIndex("last_name"));
-                //     Full_name = f_name +" "+ m_name +" "+l_name;
-                // /    animalNames.add(Full_name);
-                //    animalNames.add(res.getString(res.getColumnIndex("work_phone")));
-                //    animalNames.add(res.getString(res.getColumnIndex("bill_area")));
-
-                /**Mwisho*/
-
+                meter_Number = res.getString(res.getColumnIndex("meter_number"));
+                connection_Number = res.getString(res.getColumnIndex("connection_number"));
+                Cursor res_namba = dataBaseHelper.getCustomer_Number(connection_Number);
+                if (res_namba.moveToFirst()) {
+                    do {
+                        String f_name = res_namba.getString(res_namba.getColumnIndex("first_name"));
+                        String m_name = res_namba.getString(res_namba.getColumnIndex("middle_name"));
+                        String l_name = res_namba.getString(res_namba.getColumnIndex("last_name"));
+                        customer_Name = f_name + " " + m_name + " " + l_name;
+                    } while (res_namba.moveToNext());
+                }
+                badosomewa_model1List.add(new Badosomewa_Model1(meter_Number,connection_Number,customer_Name,true,"","",""));
             } while (res.moveToNext());
         } else if (res.moveToFirst() == false) {
             switch (desc) {
@@ -206,17 +162,26 @@ searchView_bado.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
                         rs = dtHelper.getMeterNumber_RV();
 
                         if (rs.moveToFirst()) {
-                            animalNames.clear();
+                            badosomewa_model1List.clear();
                             do {
-                                //meterList.add(res.getString(2));
+                               meter_Number = rs.getString(rs.getColumnIndex("meter_number"));
+                                connection_Number = rs.getString(rs.getColumnIndex("connection_number"));
 
-                                animalNames.add(rs.getString(rs.getColumnIndex("meter_number")));
-                                // animalNames.add(res.getString(res.getColumnIndex("connection_number")));
+                                Cursor res_namba = dataBaseHelper.getCustomer_Number(connection_Number);
+                                if (res_namba.moveToFirst()) {
+                                    do {
+                                        String f_name = res_namba.getString(res_namba.getColumnIndex("first_name"));
+                                        String m_name = res_namba.getString(res_namba.getColumnIndex("middle_name"));
+                                        String l_name = res_namba.getString(res_namba.getColumnIndex("last_name"));
+                                        customer_Name = f_name + " " + m_name + " " + l_name;
+                                    } while (res_namba.moveToNext());
+                                }
+                                badosomewa_model1List.add(new Badosomewa_Model1(meter_Number,connection_Number,customer_Name,true,"","",""));
                             } while (rs.moveToNext());
                         }
                     } else if (Key.length() != 6) {
-                        animalNames.clear();
-                        animalNames.add("Account Haipo/Not Valid !!");
+                       badosomewa_model1List.clear();
+                       badosomewa_model1List.add(new Badosomewa_Model1("Account Haipo/Not Valid !!","","",true,"","",""));
                     }
                     break;
                 case "Meter_Number":
@@ -227,17 +192,26 @@ searchView_bado.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
                         rs = dtHelper.getMeterNumber_RV();
 
                         if (rs.moveToFirst()) {
-                            animalNames.clear();
+                            badosomewa_model1List.clear();
                             do {
-                                //meterList.add(res.getString(2));
+                                meter_Number = rs.getString(rs.getColumnIndex("meter_number"));
+                                connection_Number = rs.getString(rs.getColumnIndex("connection_number"));
 
-                                animalNames.add(rs.getString(rs.getColumnIndex("meter_number")));
-                                // animalNames.add(res.getString(res.getColumnIndex("connection_number")));
+                                Cursor res_namba = dataBaseHelper.getCustomer_Number(connection_Number);
+                                if (res_namba.moveToFirst()) {
+                                    do {
+                                        String f_name = res_namba.getString(res_namba.getColumnIndex("first_name"));
+                                        String m_name = res_namba.getString(res_namba.getColumnIndex("middle_name"));
+                                        String l_name = res_namba.getString(res_namba.getColumnIndex("last_name"));
+                                        customer_Name = f_name + " " + m_name + " " + l_name;
+                                    } while (res_namba.moveToNext());
+                                }
+                                badosomewa_model1List.add(new Badosomewa_Model1(meter_Number,connection_Number,customer_Name,true,"","",""));
                             } while (rs.moveToNext());
                         }
                     } else {
-                        animalNames.clear();
-                        animalNames.add("Mita Haipo/Not Valid !!");
+                        badosomewa_model1List.clear();
+                        badosomewa_model1List.add(new Badosomewa_Model1("Mita Haipo/Not Valid !!","","",true,"","",""));
                     }
                     break;
                 case "Name":
@@ -248,185 +222,210 @@ searchView_bado.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
                         rs = dtHelper.getMeterNumber_RV();
 
                         if (rs.moveToFirst()) {
-                            animalNames.clear();
+                            badosomewa_model1List.clear();
                             do {
-                                //meterList.add(res.getString(2));
+                                meter_Number = rs.getString(rs.getColumnIndex("meter_number"));
+                                connection_Number = rs.getString(rs.getColumnIndex("connection_number"));
 
-                                animalNames.add(rs.getString(rs.getColumnIndex("meter_number")));
-                                // animalNames.add(res.getString(res.getColumnIndex("connection_number")));
+                                Cursor res_namba = dataBaseHelper.getCustomer_Number(connection_Number);
+                                if (res_namba.moveToFirst()) {
+                                    do {
+                                        String f_name = res_namba.getString(res_namba.getColumnIndex("first_name"));
+                                        String m_name = res_namba.getString(res_namba.getColumnIndex("middle_name"));
+                                        String l_name = res_namba.getString(res_namba.getColumnIndex("last_name"));
+                                        customer_Name = f_name + " " + m_name + " " + l_name;
+                                    } while (res_namba.moveToNext());
+                                }
+                                badosomewa_model1List.add(new Badosomewa_Model1(meter_Number,connection_Number,customer_Name,true,"","",""));
                             } while (rs.moveToNext());
                         }
                     } else {
-                        animalNames.clear();
-                        animalNames.add("Jina Halipo/Not Valid !!");
+                        badosomewa_model1List.clear();
+                        badosomewa_model1List.add(new Badosomewa_Model1("Jina Halipo/Not Valid !!","","",true,"","",""));
                     }
                     break;
-
             }
-
-
     }
 
         try {
-            recyclerView.setLayoutManager(new LinearLayoutManager(read_Search.this));
-            adapter = new readSearch_Adapter(read_Search.this, animalNames);
-            adapter.setClickListener(read_Search.this);
+            recyclerView.setLayoutManager(new LinearLayoutManager(mContext));
             recyclerView.setAdapter(adapter);
+            setRecyclerView();
 
         }catch (Exception e ){
             Toast.makeText(read_Search.this, "An error While Generating List \n" +e.getMessage() , Toast.LENGTH_SHORT).show();
-
         }
-
         return true;
-
     }
 
-    public void onCheckboxClicked(View view) {
-        // Is the view now checked?
-        boolean checked = ((CheckBox) view).isChecked();
-
-        // Check which checkbox was clicked
-        switch(view.getId()) {
-            case R.id.chkConnNumber:
-                if (checked){
-                    chkMeterNumber.setChecked(true);
-                }
-
-            else
-
-                break;
-            case R.id.chkMeterNumber:
-                if (checked){
-
-                }
-
-            else
-                               break;
-            case R.id.chkName:
-                if (checked){}
-                             else
-                                    break;
-                 }
-    }
+//    public void onCheckboxClicked(View view) {
+//        // Is the view now checked?
+//        boolean checked = ((CheckBox) view).isChecked();
+//        // Check which checkbox was clicked
+//        switch(view.getId()) {
+//            case R.id.chkConnNumber:
+//                if (checked){
+//                    chkMeterNumber.setChecked(true);
+//                }
+//            else
+//                break;
+//            case R.id.chkMeterNumber:
+//                if (checked){
+//                }
+//
+//            else
+//                               break;
+//            case R.id.chkName:
+//                if (checked){}
+//                             else
+//                                    break;
+//                 }
+//    }
     @Override
     public boolean onQueryTextChange(String newText) {
+        String meter_Number = "", connection_Number = "",   customer_Name ="";
+        badosomewa_model1List = new ArrayList<>();
+
         String desc = "";
-        if(chkConnNumber.isChecked()){
+        if (chkConnNumber.isChecked()) {
             desc = "Connection_Number";
-        }else if(chkMeterNumber.isChecked())
-        {  desc = "Meter_Number";}
-        else if(chkName.isChecked())
-        {  desc = "Name";}
-        Log.e(TAG, "onQueryTextChange: "+desc );
-        CharSequence key =  searchView_bado.getQuery();
-        String Key = key.toString();
-        dataBaseHelper = new DatabaseHelper(read_Search.this);
+            searchView_bado.setQueryHint("Enter Valid Account Number");
 
-        Cursor res = dataBaseHelper.getMeterNumber_RV_where(Key,desc);
-        if(res.moveToFirst()){
-            animalNames.clear();
-            do{
-                //meterList.add(res.getString(2));
+        } else if (chkMeterNumber.isChecked()) {
+            desc = "Meter_Number";
+            searchView_bado.setQueryHint("Enter Valid Meter Number");
 
-                animalNames.add(res.getString(res.getColumnIndex( "meter_number" )));
-                // animalNames.add(res.getString(res.getColumnIndex("connection_number")));
-
-                /**Changes za 15/08/2019*/
-                //  animalNames.add(res.getString(res.getColumnIndex("first_name")));
-                //  animalNames.add(res.getString(res.getColumnIndex("middle_name")));
-                //   animalNames.add(res.getString(res.getColumnIndex("last_name")));
-                //  f_name = res.getString(res.getColumnIndex("first_name"));
-                //   m_name = res.getString(res.getColumnIndex("middle_name"));
-                //   l_name = res.getString(res.getColumnIndex("last_name"));
-                //    Full_name = f_name +" "+ m_name +" "+l_name;
-                //   animalNames.add(Full_name);
-                //   animalNames.add(res.getString(res.getColumnIndex("work_phone")));
-                //  animalNames.add(res.getString(res.getColumnIndex("bill_area")));
-
-                /**Mwisho*/
-            }while (res.moveToNext());
+        } else if (chkName.isChecked()) {
+            desc = "Name";
+            searchView_bado.setQueryHint("Enter Customer Name");
         }
+        //  Log.e(TAG, "onQueryTextSubmit: " + desc);
+        CharSequence key = searchView_bado.getQuery();
+        String Key = key.toString();
 
-        else if(res.moveToFirst() == false){
-            switch (desc){
+        dataBaseHelper = new DatabaseHelper(read_Search.this);
+        Cursor res = dataBaseHelper.getMeterNumber_RV_where(Key, desc);
+
+        if (res.moveToFirst()) {
+            badosomewa_model1List.clear();
+            do {
+                meter_Number = res.getString(res.getColumnIndex("meter_number"));
+                connection_Number = res.getString(res.getColumnIndex("connection_number"));
+                Cursor res_namba = dataBaseHelper.getCustomer_Number(connection_Number);
+                if (res_namba.moveToFirst()) {
+                    do {
+                        String f_name = res_namba.getString(res_namba.getColumnIndex("first_name"));
+                        String m_name = res_namba.getString(res_namba.getColumnIndex("middle_name"));
+                        String l_name = res_namba.getString(res_namba.getColumnIndex("last_name"));
+                        customer_Name = f_name + " " + m_name + " " + l_name;
+                    } while (res_namba.moveToNext());
+                }
+                badosomewa_model1List.add(new Badosomewa_Model1(meter_Number,connection_Number,customer_Name,true,"","",""));
+            } while (res.moveToNext());
+        } else if (res.moveToFirst() == false) {
+            switch (desc) {
                 case "Connection_Number":
-                    if(Key.length() == 0){
-                        adapter.notifyDataSetChanged();
+                    if (Key.length() == 0) {
+                      //  adapter.notifyDataSetChanged();
                         dtHelper = new DatabaseHelper(read_Search.this);
 
                         rs = dtHelper.getMeterNumber_RV();
 
                         if (rs.moveToFirst()) {
-                            animalNames.clear();
+                            badosomewa_model1List.clear();
                             do {
-                                //meterList.add(res.getString(2));
+                                meter_Number = rs.getString(rs.getColumnIndex("meter_number"));
+                                connection_Number = rs.getString(rs.getColumnIndex("connection_number"));
 
-                                animalNames.add(rs.getString(rs.getColumnIndex("meter_number")));
-                                // animalNames.add(res.getString(res.getColumnIndex("connection_number")));
+                                Cursor res_namba = dataBaseHelper.getCustomer_Number(connection_Number);
+                                if (res_namba.moveToFirst()) {
+                                    do {
+                                        //10373705
+                                        String f_name = res_namba.getString(res_namba.getColumnIndex("first_name"));
+                                        String m_name = res_namba.getString(res_namba.getColumnIndex("middle_name"));
+                                        String l_name = res_namba.getString(res_namba.getColumnIndex("last_name"));
+                                        customer_Name = f_name + " " + m_name + " " + l_name;
+                                    } while (res_namba.moveToNext());
+                                }
+                                badosomewa_model1List.add(new Badosomewa_Model1(meter_Number,connection_Number,customer_Name,true,"","",""));
                             } while (rs.moveToNext());
                         }
-                     }
-                    else if(Key.length() != 6){
-                        animalNames.clear();
-                        animalNames.add("Account Haipo/Not Valid !!");
+                    } else if (Key.length() != 6) {
+                        badosomewa_model1List.clear();
+                        badosomewa_model1List.add(new Badosomewa_Model1("Account Haipo/Not Valid !!","","",true,"","",""));
                     }
                     break;
                 case "Meter_Number":
-                    if(Key.length() == 0) {
-                        adapter.notifyDataSetChanged();
+                    if (Key.length() == 0) {
+                        //adapter.notifyDataSetChanged();
                         dtHelper = new DatabaseHelper(read_Search.this);
 
                         rs = dtHelper.getMeterNumber_RV();
 
                         if (rs.moveToFirst()) {
-                            animalNames.clear();
+                            badosomewa_model1List.clear();
                             do {
-                                //meterList.add(res.getString(2));
+                                meter_Number = rs.getString(rs.getColumnIndex("meter_number"));
+                                connection_Number = rs.getString(rs.getColumnIndex("connection_number"));
 
-                                animalNames.add(rs.getString(rs.getColumnIndex("meter_number")));
-                                // animalNames.add(res.getString(res.getColumnIndex("connection_number")));
+                                Cursor res_namba = dataBaseHelper.getCustomer_Number(connection_Number);
+                                if (res_namba.moveToFirst()) {
+                                    do {
+                                        String f_name = res_namba.getString(res_namba.getColumnIndex("first_name"));
+                                        String m_name = res_namba.getString(res_namba.getColumnIndex("middle_name"));
+                                        String l_name = res_namba.getString(res_namba.getColumnIndex("last_name"));
+                                        customer_Name = f_name + " " + m_name + " " + l_name;
+                                    } while (res_namba.moveToNext());
+                                }
+                                badosomewa_model1List.add(new Badosomewa_Model1(meter_Number,connection_Number,customer_Name,true,"","",""));
                             } while (rs.moveToNext());
                         }
-                    }
-                    else{
-                        animalNames.clear();
-                        animalNames.add("Mita Haipo/Not Valid !!");
+                    } else {
+                        badosomewa_model1List.clear();
+                        badosomewa_model1List.add(new Badosomewa_Model1("Mita Haipo/Not Valid !!","","",true,"","",""));
                     }
                     break;
                 case "Name":
-                    if(Key.length() == 0) {
+                    if (Key.length() == 0) {
                         adapter.notifyDataSetChanged();
                         dtHelper = new DatabaseHelper(read_Search.this);
 
                         rs = dtHelper.getMeterNumber_RV();
 
                         if (rs.moveToFirst()) {
-                            animalNames.clear();
+                            badosomewa_model1List.clear();
                             do {
-                                //meterList.add(res.getString(2));
+                                meter_Number = rs.getString(rs.getColumnIndex("meter_number"));
+                                connection_Number = rs.getString(rs.getColumnIndex("connection_number"));
 
-                                animalNames.add(rs.getString(rs.getColumnIndex("meter_number")));
-                                // animalNames.add(res.getString(res.getColumnIndex("connection_number")));
+                                Cursor res_namba = dataBaseHelper.getCustomer_Number(connection_Number);
+                                if (res_namba.moveToFirst()) {
+                                    do {
+                                        String f_name = res_namba.getString(res_namba.getColumnIndex("first_name"));
+                                        String m_name = res_namba.getString(res_namba.getColumnIndex("middle_name"));
+                                        String l_name = res_namba.getString(res_namba.getColumnIndex("last_name"));
+                                        customer_Name = f_name + " " + m_name + " " + l_name;
+                                    } while (res_namba.moveToNext());
+                                }
+                                badosomewa_model1List.add(new Badosomewa_Model1(meter_Number,connection_Number,customer_Name,true,"","",""));
                             } while (rs.moveToNext());
                         }
-                    }
-                    else{
-                        animalNames.clear();
-                        animalNames.add("Jina Halipo/Not Valid !!");
+                    } else {
+                        badosomewa_model1List.clear();
+                        badosomewa_model1List.add(new Badosomewa_Model1("Jina Halipo/Not Valid !!","","",true,"","",""));
                     }
                     break;
-
             }
-
         }
 
-
         try {
-            recyclerView.setLayoutManager(new LinearLayoutManager(read_Search.this));
+//            recyclerView.setLayoutManager(new LinearLayoutManager(read_Search.this));
             adapter = new readSearch_Adapter(read_Search.this, animalNames);
-            adapter.setClickListener(read_Search.this);
+//            adapter.setClickListener(read_Search.this);
+//            recyclerView.setAdapter(adapter);
+            recyclerView.setLayoutManager(new LinearLayoutManager(mContext));
             recyclerView.setAdapter(adapter);
+            setRecyclerView();
 
         }catch (Exception e ){
             Toast.makeText(read_Search.this, "An error While Generating List \n" +e.getMessage() , Toast.LENGTH_SHORT).show();
@@ -437,8 +436,52 @@ searchView_bado.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
 
 }
 
+    private void setRecyclerView() {
+        Badosomewa_Adaptor1 badosomewa_adaptor1 = new Badosomewa_Adaptor1(badosomewa_model1List);
+        recyclerView.setAdapter(badosomewa_adaptor1);
+    }
 
-        public static boolean isNumeric(String strNum) {
+    private void initData() {
+
+        badosomewa_model1List = new ArrayList<>();
+        Cursor res = dataBaseHelper.getMeterNumber_RV();
+        Cursor res_name = dataBaseHelper.getName_RV();
+        String meter_Number = "", connection_Number = "",   customer_Name ="";
+
+        if (res.moveToFirst()) {
+            badosomewa_model1List.clear();
+            do {
+                meter_Number = res.getString(res.getColumnIndex("meter_number"));
+                connection_Number = res.getString(res.getColumnIndex("connection_number"));
+
+                Cursor res_namba = dataBaseHelper.getCustomer_Number(connection_Number);
+                if (res_namba.moveToFirst()) {
+                    do {
+                        String f_name = res_namba.getString(res_namba.getColumnIndex("first_name"));
+                        String m_name = res_namba.getString(res_namba.getColumnIndex("middle_name"));
+                        String l_name = res_namba.getString(res_namba.getColumnIndex("last_name"));
+                        customer_Name = f_name + " " + m_name + " " + l_name;
+                    } while (res_namba.moveToNext());
+                }
+                badosomewa_model1List.add(new Badosomewa_Model1(meter_Number,connection_Number,customer_Name,true,"","",""));
+            }while (res.moveToNext() );
+        }
+        else
+        {
+            badosomewa_model1List.add(new Badosomewa_Model1("Synchronise Data","","Synchronise Data",true,"","",""));
+        }
+        try {
+            recyclerView.setLayoutManager(new LinearLayoutManager(this));
+            recyclerView.setAdapter(adapter);
+
+        } catch (Exception e) {
+            Toast.makeText(this, "An error While Generating List \n" + e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
+
+    public static boolean isNumeric(String strNum) {
             if (strNum == null) {
                 return false;
             }

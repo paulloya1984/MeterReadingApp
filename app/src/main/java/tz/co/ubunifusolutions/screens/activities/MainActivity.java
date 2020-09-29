@@ -1,5 +1,6 @@
 package tz.co.ubunifusolutions.screens.activities;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -7,17 +8,21 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.design.widget.BottomSheetDialog;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.PopupMenu;
+import android.util.DisplayMetrics;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -91,14 +96,54 @@ public class MainActivity extends AppCompatActivity {
 
                     break;
                 case R.id.navigation_settings:
-                    fragment = new settingsFrag();
-                    if(fragment !=null){
+//                    fragment = new settingsFrag();
+//                    if(fragment !=null){
+//                        getSupportFragmentManager()
+//                                .beginTransaction()
+//                                .replace(R.id.frag_container, fragment)
+//                                .commit();
+//                    }
+
+                    BottomSheetDialog bottomSheetDialog = new BottomSheetDialog( MainActivity.this , R.style.BottomSheetDialogTheme);
+                    View bottomSheetView = LayoutInflater.from(getApplicationContext())
+                            .inflate(R.layout.bottom_layout_sheet,(LinearLayout)findViewById(R.id.design_bottom_sheet));
+                    bottomSheetView.findViewById(R.id.button2).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent  intent = new Intent(getApplicationContext(), about_Bawasa.class);
+                            startActivity(intent);
+                        }
+                    });
+                    bottomSheetView.findViewById(R.id.button5).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent  intent1 = new Intent(getApplicationContext(), About.class);
+                            startActivity(intent1);
+                        }
+                    });
+                    bottomSheetView.findViewById(R.id.button3).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Fragment fragment;
+                            fragment = new settingsFrag();
+
+                            if(fragment !=null){
                         getSupportFragmentManager()
                                 .beginTransaction()
                                 .replace(R.id.frag_container, fragment)
                                 .commit();
                     }
-
+                        }
+                    });
+                    bottomSheetView.findViewById(R.id.button5).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent  intent = new Intent(getApplicationContext(), about_Bawasa.class);
+                            startActivity(intent);
+                        }
+                    });
+                    bottomSheetDialog.setContentView(bottomSheetView);
+                    bottomSheetDialog.show();
 
 
                     break;
@@ -269,5 +314,12 @@ public class MainActivity extends AppCompatActivity {
         );
         builderSingle.show();
     }
+
+//    public int getWindowHeight(){
+//        DisplayMetrics displayMetrics = new DisplayMetrics();
+//        //(Activity)get
+//
+//    }
+
 
 }

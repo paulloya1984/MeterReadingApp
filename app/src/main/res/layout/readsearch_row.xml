@@ -13,6 +13,7 @@
     android:paddingLeft="5dp"
     android:paddingRight="5dp"
     android:backgroundTint="@color/black_overlay"
+    android:id="@+id/badosomewa_Linearlayout"
     >
 
     <android.support.v7.widget.CardView

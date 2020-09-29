@@ -126,6 +126,7 @@ import tz.co.ubunifusolutions.screens.storage.DatabaseHelper_node;
                 try {
                     recyclerView.setLayoutManager(new LinearLayoutManager(mContext));
                     recyclerView.setAdapter(adapter);
+                    setRecyclerView();
 
                 } catch (Exception e) {
                    // Toast.makeText(this, "An error While Generating List \n" + e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -136,7 +137,66 @@ import tz.co.ubunifusolutions.screens.storage.DatabaseHelper_node;
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                return false;
+                CharSequence key =  searchView_waliosomewa.getQuery();
+                String Key = key.toString();
+                String aa="";
+                Cursor res = dataBaseHelper.getMeterNumber_RVWaliosomewa_where(Key);
+                String meter_Number = "", connection_Number = "",  current_Reading = "", customer_Name ="",  image_Uri="",area_code="",route="",seq="";
+                if (res.moveToFirst()) {
+                    waliosomewa_model1List.clear();
+                    do {
+                        meter_Number = res.getString(res.getColumnIndex("meter_number"));
+                        connection_Number = res.getString(res.getColumnIndex("connection_number"));
+                        current_Reading = res.getString(res.getColumnIndex("current_reading"));
+                        area_code = res.getString(res.getColumnIndex("bill_area"));
+                        route = res.getString(res.getColumnIndex("route"));
+                        seq = res.getString(res.getColumnIndex("seq"));
+                        image_Uri = res.getString(res.getColumnIndex("image_uri"));
+
+
+                        Cursor res_namba = dataBaseHelper.getCustomer_Number(connection_Number);
+                        if (res_namba.moveToFirst()) {
+                            do {
+                                String f_name = res_namba.getString(res_namba.getColumnIndex("first_name"));
+                                String m_name = res_namba.getString(res_namba.getColumnIndex("middle_name"));
+                                String l_name = res_namba.getString(res_namba.getColumnIndex("last_name"));
+                                customer_Name = f_name + " " + m_name + " " + l_name;
+                            } while (res_namba.moveToNext());
+                        }
+                        waliosomewa_model1List.add(new Waliosomewa_Model1(meter_Number,connection_Number,current_Reading,customer_Name,image_Uri,area_code,seq,route));
+                    }while (res.moveToNext() );
+
+//            if(res_name.moveToFirst()){
+//                do{
+//                    String f_name = res_name.getString(res_name.getColumnIndex("first_name"));
+//                    // Toast.makeText(read_Search.this, f_name , Toast.LENGTH_SHORT).show();
+//                    String m_name = res_name.getString(res_name.getColumnIndex("middle_name"));
+//                    String l_name = res_name.getString(res_name.getColumnIndex("last_name"));
+//                    customer_Name = f_name + " " + m_name + " " +l_name;
+//
+//                    //Log.i(TAG,Full_name);
+//                    //     animalNames.add(Full_name);
+//                } while(res_name.moveToNext());
+//            }
+//            waliosomewa_model1List.add(new Waliosomewa_Model1(meter_Number,connection_Number,current_Reading,customer_Name,image_Uri));
+                    Log.e(TAG, "initData: Image uri from DB" + image_Uri );
+
+                }
+                else
+                {
+                    waliosomewa_model1List.add(new Waliosomewa_Model1("Bado Hujasoma","","","Bado Hujasoma","","","",""));
+                }
+
+                try {
+                    recyclerView.setLayoutManager(new LinearLayoutManager(mContext));
+                    recyclerView.setAdapter(adapter);
+                    setRecyclerView();
+
+                } catch (Exception e) {
+                    // Toast.makeText(this, "An error While Generating List \n" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+
+                return true;
             }
         });
 
@@ -178,19 +238,6 @@ import tz.co.ubunifusolutions.screens.storage.DatabaseHelper_node;
                 waliosomewa_model1List.add(new Waliosomewa_Model1(meter_Number,connection_Number,current_Reading,customer_Name,image_Uri,area_code,seq,route));
             }while (res.moveToNext() );
 
-//            if(res_name.moveToFirst()){
-//                do{
-//                    String f_name = res_name.getString(res_name.getColumnIndex("first_name"));
-//                    // Toast.makeText(read_Search.this, f_name , Toast.LENGTH_SHORT).show();
-//                    String m_name = res_name.getString(res_name.getColumnIndex("middle_name"));
-//                    String l_name = res_name.getString(res_name.getColumnIndex("last_name"));
-//                    customer_Name = f_name + " " + m_name + " " +l_name;
-//
-//                    //Log.i(TAG,Full_name);
-//                    //     animalNames.add(Full_name);
-//                } while(res_name.moveToNext());
-//            }
-//            waliosomewa_model1List.add(new Waliosomewa_Model1(meter_Number,connection_Number,current_Reading,customer_Name,image_Uri));
             Log.e(TAG, "initData: Image uri from DB" + image_Uri );
 
         }
@@ -202,6 +249,7 @@ import tz.co.ubunifusolutions.screens.storage.DatabaseHelper_node;
  try {
             recyclerView.setLayoutManager(new LinearLayoutManager(this));
             recyclerView.setAdapter(adapter);
+
 
         } catch (Exception e) {
             Toast.makeText(this, "An error While Generating List \n" + e.getMessage(), Toast.LENGTH_SHORT).show();
